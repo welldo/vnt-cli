@@ -53,7 +53,7 @@ jobs:
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-musleabihf]
           linker = "armv7l-linux-musleabihf-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols", "-C", "link-arg=-lgcc","-C", "target-cpu=Cortex-a8"]
+          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols", "-C", "link-arg=-lgcc","-C", "target-cpu=armv7l"]
           EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
           git clone https://github.com/lmq8267/cloudflared.git /opt/st
