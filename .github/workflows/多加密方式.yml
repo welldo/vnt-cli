@@ -67,7 +67,8 @@ jobs:
           EOF
       - name: 开始编译
         run: |
-         git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
+         #git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
+         git clone https://github.com/lbl8603/vnt.git /opt/vnt
          cd /opt/vnt
          echo $FEATURES
          cargo build --package vnt-cli --release --target=mipsel-unknown-linux-musl $FEATURES
