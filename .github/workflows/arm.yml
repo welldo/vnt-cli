@@ -39,7 +39,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ./target
-          key: build-cargo-registry-mipsel-unknown-linux-musl
+          key: build-cargo-registry-armv7-unknown-linux-musleabihf
       - name: List
         run: find ./
       - 
