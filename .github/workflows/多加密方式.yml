@@ -70,6 +70,7 @@ jobs:
          #git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
          git clone https://github.com/lbl8603/vnt.git /opt/vnt
          cd /opt/vnt
+         sed -i 's|0.9.25|0.8.26|g' ./vnt-cli/Cargo.toml
          echo $FEATURES
          cargo build --package vnt-cli --release --target=mipsel-unknown-linux-musl $FEATURES
       - name: 压缩
