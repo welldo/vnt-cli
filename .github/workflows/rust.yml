@@ -63,7 +63,7 @@ jobs:
           chmod 777 /opt/st/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          #sed -i 's|0.9.25|0.8.26|g' ./vnt-cli/Cargo.toml
+          sed -i 's|0.9.25|0.8.26|g' ./vnt-cli/Cargo.toml
           echo 编译无任何加密版
           cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --no-default-features
           cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli_lite
