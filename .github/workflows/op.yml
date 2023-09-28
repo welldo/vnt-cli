@@ -48,17 +48,22 @@ jobs:
           mkdir -p ./musl_gcc 
           wget -c http://archive.openwrt.org/chaos_calmer/15.05.1/ramips/mt7621/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -P ./musl_gcc/
           tar -xvjf ./musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -C ./musl_gcc/
-          #sudo ln -s $(pwd)/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/
+          #sudo ln -s $(pwd)/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/ 
           sudo rm -rf /usr/bin/ldd
           sudo rm -rf /usr/bin/ar
+          sudo rm -rf /usr/bin/ld
           sudo rm -rf /usr/bin/gcc
+          sudo cp -rf  $(pwd)/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-ld /usr/bin/ld
           sudo cp -rf  $(pwd)/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-gcc /usr/bin/gcc
           sudo cp -rf  $(pwd)/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-ar /usr/bin/ar
           sudo cp -rf  $(pwd)/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/ldd /usr/bin/ldd
           rustup target add mipsel-unknown-linux-musl
+
+          sudo chmod 777 $(pwd)/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-strip
+          cp -rf $(pwd)/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-strip /opt/strip
           cat >>~/.cargo/config <<EOF
           [target.mipsel-unknown-linux-musl]
-          #linker = "mipsel-linux-musl-gcc"
+          linker = "/usr/bin/gcc"
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
           EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
@@ -71,7 +76,7 @@ jobs:
           cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release 
           cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli
            cd /opt/vnt-mipsel
-          /opt/st/strip /opt/vnt-mipsel/vnt-cli
+          /opt/strip /opt/vnt-mipsel/vnt-cli
           /opt/upx-3.95-amd64_linux/upx --lzma --best vnt-cli
           echo $(md5sum vnt-cli | awk '{print $1;}') >MD5.txt
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
