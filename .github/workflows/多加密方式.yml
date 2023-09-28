@@ -46,13 +46,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: 初始化环境
         uses: snickerbockers/submodules-init@v4
-      - name: 设置cargo缓存
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ./target
-          key: build-cargo-registry-mipsel-unknown-linux-musl
+      #- name: 设置cargo缓存
+        #uses: actions/cache@v2
+        #with:
+          #path: |
+            #~/.cargo/registry
+            #./target
+          #key: build-cargo-registry-mipsel-unknown-linux-musl
       - name: 配置编译工具链
         run: |
           mkdir -p ./musl_gcc 
@@ -79,10 +79,10 @@ jobs:
           tar -xvf /opt/st/upx-3.95-amd64_linux.tar.xz -C /opt
           chmod 777 /opt/upx-3.95-amd64_linux/upx
           chmod 777 /opt/st/strip
-          cp -rf /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/mipsel/vnt-cli_$NAME
+          cp -rf /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/$NAME/vnt-cli_$NAME
+          cd /opt/$NAME
           /opt/st/strip /opt/$NAME/vnt-cli_$NAME
           /opt/upx-3.95-amd64_linux/upx /opt/$NAME/vnt-cli_$NAME
-          cd /opt/$NAME
           echo $(md5sum vnt-cli_$NAME | awk '{print $1;}') >$NAME_MD5.txt
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - name: 发布
