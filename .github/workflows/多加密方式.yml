@@ -91,17 +91,18 @@ jobs:
         with:
           token: ${{ secrets.c8 }}
           body: |
-           编译时间 ：${{ env.build_time }}
+           > ### 编译时间 ：${{ env.build_time }}
 
-           各版本区别：vnt-cli_**
+           ### **各版本区别：**
            
-           openssl ：只集成openssl，aes_ecb，aes-gcb，服务器验证  openssl_MD5.txt为其MD5检验值 
-           lite ：不集成任何加密 lite_MD5.txt为其MD5检验值
-           default ：排除openssl只使用默认加密 default_MD5.txt为其MD5检验值
-           full ：集成所有加密方式 full_MD5.txt为其MD5检验值
+           - **openssl** ：只集成openssl，aes_ecb，aes-gcb，服务器验证  openssl_MD5.txt为其MD5检验值 
+           - **lite** ：不集成任何加密 lite_MD5.txt为其MD5检验值
+           - **default** ：排除openssl只使用默认加密 default_MD5.txt为其MD5检验值
+           - **full** ：集成所有加密方式 full_MD5.txt为其MD5检验值
 
            如果不加密（参数-w），集不集成加密模块都不影响使用，若加密则所有客户端都应使用相同的加密方式
-           详细加密方式介绍：https://github.com/lbl8603/vnt#%E7%BC%96%E8%AF%91
+           [详细加密方式介绍](https://github.com/lbl8603/vnt#%E7%BC%96%E8%AF%91)、[官方更新说明](https://github.com/lbl8603/vnt/releases)
+           
           tag_name: ${{ needs.check.outputs.ver }}
           files: |
               /opt/mipsel/*
