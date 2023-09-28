@@ -31,7 +31,7 @@ jobs:
         include:
           - FEATURES: --no-default-features
             NAME: lite
-          - FEATURES: --no-default-features --features openssl-vendored,aes_ecb,server_encrypt
+          - FEATURES: --no-default-features --features openssl-vendored,aes_ecb,server_encrypt,aes_gcm
             NAME: openssl
           - FEATURES: --features default
             NAME: default
