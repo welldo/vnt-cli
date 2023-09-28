@@ -47,7 +47,7 @@ jobs:
         run: |
           mkdir -p /opt/musl_gcc 
           wget -c http://archive.openwrt.org/chaos_calmer/15.05.1/ramips/mt7621/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -P /opt/musl_gcc/
-          tar -xvjf ./musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -C /opt/musl_gcc/
+          tar -xvjf /opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -C /opt/musl_gcc/
           #sudo ln -s $(pwd)/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/ 
           sudo rm -rf /usr/bin/ldd
           sudo rm -rf /usr/bin/ar
