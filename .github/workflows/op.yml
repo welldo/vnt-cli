@@ -54,8 +54,8 @@ jobs:
           sudo rm -rf /usr/bin/ld
           sudo rm -rf /usr/bin/gcc
 
-          find ./musl_gcc -name "mipsel-openwrt-linux-uclibc-gcc"
-          sudo chmod 777 -R ./musl_gcc
+          find /opt/musl_gcc -name "mipsel-openwrt-linux-uclibc-gcc"
+          sudo chmod 777 -R /opt/musl_gcc
           export LD=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-ld
           export CC=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-gcc
           export AR=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-ar
