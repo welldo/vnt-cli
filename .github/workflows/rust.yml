@@ -5,6 +5,7 @@ on:
     #- cron: '0 3,20 * * *'
   workflow_dispatch:
 env:
+  CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
 jobs:
   check:
@@ -62,13 +63,35 @@ jobs:
           chmod 777 /opt/st/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          sed -i 's|0.9.25|0.8.26|g' ./vnt-cli/Cargo.toml
+          #sed -i 's|0.9.25|0.8.26|g' ./vnt-cli/Cargo.toml
+          echo 编译无任何加密版
           cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --no-default-features
-          cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli1
-           cd /opt/vnt-mipsel
-          /opt/st/strip /opt/vnt-mipsel/vnt-cli1
-          /opt/upx-3.95-amd64_linux/upx --lzma --best vnt-cli1
-          echo $(md5sum vnt-cli1 | awk '{print $1;}') >MD5.tx
+          cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli_lite
+          cargo clean
+          echo 编译openssl版
+          cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --no-default-features --features openssl-vendored,aes_ecb,server_encrypt,aes_gcm
+          cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli_openssl
+          cargo clean
+          echo 编译默认加密版
+          cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --features default
+          cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli_default
+          cargo clean
+          echo 编译全加密版
+          cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --features openssl-vendored
+          cp -rf /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli_full
+          cd /opt/vnt-mipsel
+          /opt/st/strip /opt/vnt-mipsel/vnt-cli_lite
+          /opt/upx-3.95-amd64_linux/upx --lzma --best vnt-cli_lite
+          /opt/st/strip /opt/vnt-mipsel/vnt-cli_full
+          /opt/upx-3.95-amd64_linux/upx --lzma --best vnt-cli_full
+          /opt/st/strip /opt/vnt-mipsel/vnt-cli_openssl
+          /opt/upx-3.95-amd64_linux/upx --lzma --best vnt-cli_openssl
+          /opt/st/strip /opt/vnt-mipsel/vnt-cli_default
+          /opt/upx-3.95-amd64_linux/upx --lzma --best vnt-cli_default
+          echo $(md5sum vnt-cli_lite | awk '{print $1;}') >MD5.txt
+          echo $(md5sum vnt-cli_full | awk '{print $1;}') >MD5.txt
+          echo $(md5sum vnt-cli_openssl | awk '{print $1;}') >MD5.txt
+          echo $(md5sum vnt-cli_default | awk '{print $1;}') >MD5.txt
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - 
         name: 发布
@@ -81,8 +104,7 @@ jobs:
            测试
           tag_name: ${{ needs.check.outputs.ver }}
           files: |
-              /opt/vnt-mipsel/vnt-cli1
-              /opt/vnt-mipsel/MD5.txt
+              /opt/vnt-mipsel/*
       - 
        name: 删除工作流
        uses: GitRML/delete-workflow-runs@main
