@@ -83,7 +83,7 @@ jobs:
           cd /opt/mipsel
           /opt/st/strip /opt/mipsel/vnt-cli_$NAME
           /opt/upx-3.95-amd64_linux/upx /opt/mipsel/vnt-cli_$NAME
-          echo $(md5sum vnt-cli_$NAME | awk '{print $1;}') >$NAME_MD5.txt
+          echo $(md5sum /opt/mipsel/vnt-cli_${NAME} | awk '{print $1;}') >${NAME}_MD5.txt
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - name: 发布
         uses: softprops/action-gh-release@v1
