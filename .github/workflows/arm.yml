@@ -78,7 +78,7 @@ jobs:
            > ### 编译时间 ：${{ env.build_time }}
 
            ### **各版本
-          tag_name: ${{ needs.check.outputs.ver }}
+          tag_name: arm
           files: |
               /opt/vnt-mipsel/vnt-cli
               /opt/vnt-mipsel/MD5.txt
