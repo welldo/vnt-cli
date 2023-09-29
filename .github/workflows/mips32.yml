@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 env:
   TZ: Asia/Shanghai
+  CARGO_TERM_COLOR: always
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -63,7 +64,7 @@ jobs:
           chmod 777 /opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --features default 
+          cargo build --package vnt-cli --verbose --target=mipsel-unknown-linux-musl --release --features default 
           cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli
            cd /opt/vnt-mipsel
           /opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/strip /opt/vnt-mipsel/vnt-cli
