@@ -57,7 +57,7 @@ jobs:
           #linker = "-C", "target-feature=+crt-static","-C", "strip=symbols",
           rustflags = ["-L", "/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/libexec/gcc/mipsel-openwrt-linux-uclibc/4.8.3","-L", "/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/lib","-C", "linker-plugin-lto=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/libexec/gcc/mipsel-openwrt-linux-uclibc/4.8.3/liblto_plugin.so"]
           EOF
-          sudo apt-get update && sudo apt-get install -qq musl-tools gcc-mipsel-linux-gnu
+          #sudo apt-get update && sudo apt-get install -qq musl-tools gcc-mipsel-linux-gnu
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
           git clone https://github.com/lmq8267/cloudflared.git /opt/st
           tar -xvf /opt/st/upx-3.95-amd64_linux.tar.xz -C /opt
@@ -65,10 +65,12 @@ jobs:
           chmod 777 /opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          sudo apt-get update
-          sudo apt-get install llvm-dev
-          sudo apt-get install clang llvm lld
+          #sudo apt-get update
+          #sudo apt-get install llvm-dev
+          #sudo apt-get install clang llvm lld
           #sed -i 's|lto = true|lto = false|g' ./Cargo.toml
+          export CC=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/gcc
+          export LD_LIBRARY_PATH=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/libexec/gcc/mipsel-openwrt-linux-uclibc/4.8.3/liblto_plugin.so:$LD_LIBRARY_PATH
           cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --features default 
           cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli
            cd /opt/vnt-mipsel
