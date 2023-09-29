@@ -65,6 +65,9 @@ jobs:
           chmod 777 /opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
+          sudo apt-get update
+          sudo apt-get install llvm-dev
+          sudo apt-get install clang llvm lld
           #sed -i 's|lto = true|lto = false|g' ./Cargo.toml
           cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --features default 
           cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli
