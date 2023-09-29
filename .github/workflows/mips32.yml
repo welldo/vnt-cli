@@ -73,6 +73,7 @@ jobs:
           export AR=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-ar
           export CC=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/gcc
           export LD_LIBRARY_PATH=/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/libexec/gcc/mipsel-openwrt-linux-uclibc/4.8.3/liblto_plugin.so:$LD_LIBRARY_PATH
+          /opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/gcc -fuse-linker-plugin -L/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/libexec/gcc/mipsel-openwrt-linux-uclibc/4.8.3/liblto_plugin.so
           cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --features default 
           cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli
            cd /opt/vnt-mipsel
