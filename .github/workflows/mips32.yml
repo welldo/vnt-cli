@@ -1,0 +1,91 @@
+name: 编译op32
+
+on:
+  #schedule:
+    #- cron: '0 3,20 * * *'
+  workflow_dispatch:
+env:
+  TZ: Asia/Shanghai
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ver: ${{ steps.getversion.outputs.ver }}
+      cver: ${{ steps.getversion.outputs.cver }}
+    steps:
+      -
+        name: 检查更新
+        id: getversion
+        run: |
+          ver=`curl https://api.github.com/repos/lbl8603/vnt/releases/latest | jq -r '.tag_name'`
+          #vntsv=`curl https://api.github.com/repos/lbl8603/vnts/releases/latest | grep 'tag_name' | cut -d\" -f4`
+          cver=`curl https://api.github.com/repos/lmq8267/vnt-/releases/latest | jq -r '.tag_name'`
+          echo "ver=${ver}" >> $GITHUB_OUTPUT
+          echo "cver=${cver}" >> $GITHUB_OUTPUT
+
+  build:
+    runs-on: ubuntu-latest
+    needs: check
+    if: ${{ needs.check.outputs.ver != needs.check.outputs.cver }}
+    steps:
+      -
+        name: 检查代码仓库
+        uses: actions/checkout@v3
+      - name: Init submodules
+        uses: snickerbockers/submodules-init@v4
+      - name: Cargo cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ./target
+          key: build-cargo-registry-mipsel-unknown-linux-musl
+      - name: List
+        run: find ./
+      - 
+        name: 编译
+        run: |
+          mkdir -p /opt/musl_gcc 
+          wget -c https://downloads.openwrt.org/snapshots/targets/ramips/mt7621/openwrt-toolchain-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64.tar.xz -P /opt/musl_gcc/
+          tar xvf /opt/musl_gcc/openwrt-toolchain-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64.tar.xz -C /opt/musl_gcc/
+          #sudo ln -s /opt/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/
+          rustup target add mipsel-unknown-linux-musl
+          cat >>~/.cargo/config <<EOF
+          [target.mipsel-unknown-linux-musl]
+          linker = "/opt/musl_gcc/openwrt-toolchain-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64/toolchain-mipsel_24kc_gcc-12.3.0_musl/bin/mipsel-openwrt-linux-musl-gcc"
+          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+          EOF
+          git clone https://github.com/lbl8603/vnt.git /opt/vnt
+          git clone https://github.com/lmq8267/cloudflared.git /opt/st
+          tar -xvf /opt/st/upx-3.95-amd64_linux.tar.xz -C /opt
+          chmod 777 /opt/upx-3.95-amd64_linux/upx
+          chmod 777 /opt/st/strip
+          mkdir -p /opt/vnt-mipsel
+          cd /opt/vnt
+          cargo build --package vnt-cli --target=mipsel-unknown-linux-musl --release --features openssl-vendored
+          cp -f /opt/vnt/target/mipsel-unknown-linux-musl/release/vnt-cli /opt/vnt-mipsel/vnt-cli
+           cd /opt/vnt-mipsel
+          /opt/musl_gcc/openwrt-toolchain-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64/toolchain-mipsel_24kc_gcc-12.3.0_musl/mipsel-openwrt-linux-musl/bin/strip /opt/vnt-mipsel/vnt-cli
+          /opt/upx-3.95-amd64_linux/upx --lzma --best vnt-cli
+          echo $(md5sum vnt-cli | awk '{print $1;}') >MD5.txt
+          echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+      - 
+        name: 发布
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.c8 }}
+          body: |
+           > ### 编译时间 ：${{ env.build_time }}
+
+           ### 
+          tag_name: mips32${{ needs.check.outputs.ver }}
+          files: |
+              /opt/vnt-mipsel/vnt-cli
+              /opt/vnt-mipsel/MD5.txt
+      - 
+       name: 删除工作流
+       uses: GitRML/delete-workflow-runs@main
+       with:
+        token: ${{ secrets.c8 }}
+        retain_days: 2
+        keep_minimum_runs: 0
