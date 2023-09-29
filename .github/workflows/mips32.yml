@@ -9,8 +9,24 @@ env:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      ver: ${{ steps.getversion.outputs.ver }}
+      cver: ${{ steps.getversion.outputs.cver }}
+    steps:
+      -
+        name: 检查更新
+        id: getversion
+        run: |
+          ver=`curl https://api.github.com/repos/lbl8603/vnt/releases/latest | jq -r '.tag_name'`
+          #vntsv=`curl https://api.github.com/repos/lbl8603/vnts/releases/latest | grep 'tag_name' | cut -d\" -f4`
+          cver=`curl https://api.github.com/repos/lmq8267/vnt-/releases/latest | jq -r '.tag_name'`
+          echo "ver=${ver}" >> $GITHUB_OUTPUT
+          echo "cver=${cver}" >> $GITHUB_OUTPUT
+
   build:
     runs-on: ubuntu-latest
+    needs: check
+    if: ${{ needs.check.outputs.ver != needs.check.outputs.cver }}
     steps:
       -
         name: 检查代码仓库
@@ -39,6 +55,7 @@ jobs:
           linker = "/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/mipsel-openwrt-linux-uclibc/bin/gcc"
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols","-L", "/opt/musl_gcc/OpenWrt-SDK-15.05.1-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/libexec/gcc/mipsel-openwrt-linux-uclibc/4.8.3"]
           EOF
+          sudo apt-get update && sudo apt-get install -qq musl-tools gcc-mipsel-linux-gnu
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
           git clone https://github.com/lmq8267/cloudflared.git /opt/st
           tar -xvf /opt/st/upx-3.95-amd64_linux.tar.xz -C /opt
