@@ -8,20 +8,6 @@ env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    outputs:
-      ver: ${{ steps.getversion.outputs.ver }}
-      cver: ${{ steps.getversion.outputs.cver }}
-    steps:
-      -
-        name: 检查更新
-        id: getversion
-        run: |
-          ver=`curl https://api.github.com/repos/lbl8603/vnt/releases/latest | jq -r '.tag_name'`
-          cver=`curl https://api.github.com/repos/lmq8267/vnt-/releases/latest | jq -r '.tag_name'`
-          echo "ver=${ver}" >> $GITHUB_OUTPUT
-          echo "cver=${cver}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
