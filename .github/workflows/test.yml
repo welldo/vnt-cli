@@ -27,7 +27,7 @@ jobs:
         run: |
           cross build --target armv7-unknown-linux-gnueabihf
           cross rustc --target armv7-unknown-linux-gnueabihf --release -- -C lto
-          armv7-linux-gnueabihf-gcc version
+          armv7-linux-gnueabihf-gcc --version
           #mkdir -p ./musl_gcc 
           #wget -c https://musl.cc/mipsel-linux-musl-cross.tgz -P ./musl_gcc/
           #tar zxf ./musl_gcc/mipsel-linux-musl-cross.tgz -C ./musl_gcc/
@@ -45,8 +45,9 @@ jobs:
           chmod 777 /opt/st/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          sed -i '/[target.'cfg(target_os = "windows")'.dependencies]/d' ./vnt-cli/Cargo.toml
-          sed -i '/winapi = { version = "0.3.9", features = ["handleapi", "processthreadsapi", "winnt", "securitybaseapi", "impl-default"] }/d' ./vnt-cli/Cargo.toml
+          target_os = "linux"
+          #sed -i '/[target.'cfg(target_os = "windows")'.dependencies]/d' ./vnt-cli/Cargo.toml
+          #sed -i '/winapi = { version = "0.3.9", features = ["handleapi", "processthreadsapi", "winnt", "securitybaseapi", "impl-default"] }/d' ./vnt-cli/Cargo.toml
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features default
           cd /opt/vnt/target/armv7-unknown-linux-gnueabihf/release
           file vnt-cli
