@@ -25,7 +25,7 @@ jobs:
       - 
         name: 编译
         run: |
-          cross build --target armv7-unknown-linux-gnueabihf
+          cross build --target armv7-unknown-linux-gnueabihf --release
           cross rustc --target armv7-unknown-linux-gnueabihf --release -- -C lto
           armv7-linux-gnueabihf-gcc --version
           #mkdir -p ./musl_gcc 
@@ -48,7 +48,7 @@ jobs:
           target_os = "linux"
           #sed -i '/[target.'cfg(target_os = "windows")'.dependencies]/d' ./vnt-cli/Cargo.toml
           #sed -i '/winapi = { version = "0.3.9", features = ["handleapi", "processthreadsapi", "winnt", "securitybaseapi", "impl-default"] }/d' ./vnt-cli/Cargo.toml
-          cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features default
+          cross build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features default
           cd /opt/vnt/target/armv7-unknown-linux-gnueabihf/release
           file vnt-cli
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
