@@ -21,7 +21,13 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: cargo install cross --git https://github.com/cross-rs/cross
+      - run: |
+          rustup set profile minimal
+          rustup toolchain install stable
+          rustup default stable
+          rustup override set stable
+          rustup target add --toolchain stable armv7-unknown-linux-gnueabihf
+          cargo install cross
       - 
         name: 编译
         run: |
@@ -32,12 +38,12 @@ jobs:
           #wget -c https://musl.cc/mipsel-linux-musl-cross.tgz -P ./musl_gcc/
           #tar zxf ./musl_gcc/mipsel-linux-musl-cross.tgz -C ./musl_gcc/
           #sudo ln -s $(pwd)/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/
-          rustup target add armv7-unknown-linux-gnueabihf
-          cat >>~/.cargo/config <<EOF
-          [target.armv7-unknown-linux-gnueabihf]
-          linker = "armv7-linux-gnueabihf-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          EOF
+          #rustup target add armv7-unknown-linux-gnueabihf
+          #cat >>~/.cargo/config <<EOF
+          #[target.armv7-unknown-linux-gnueabihf]
+          #linker = "armv7-linux-gnueabihf-gcc"
+          #rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+          #EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
           git clone https://github.com/lmq8267/cloudflared.git /opt/st
           tar -xvf /opt/st/upx-3.95-amd64_linux.tar.xz -C /opt
@@ -45,9 +51,6 @@ jobs:
           chmod 777 /opt/st/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          target_os = "linux"
-          #sed -i '/[target.'cfg(target_os = "windows")'.dependencies]/d' ./vnt-cli/Cargo.toml
-          #sed -i '/winapi = { version = "0.3.9", features = ["handleapi", "processthreadsapi", "winnt", "securitybaseapi", "impl-default"] }/d' ./vnt-cli/Cargo.toml
           cross build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features default
           cd /opt/vnt/target/armv7-unknown-linux-gnueabihf/release
           file vnt-cli
