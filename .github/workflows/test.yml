@@ -25,14 +25,17 @@ jobs:
       - 
         name: 编译
         run: |
+          cross build --target armv7-unknown-linux-gnueabihf
+          cross rustc --target armv7-unknown-linux-gnueabihf --release -- -C lto
+          armv7-linux-gnueabihf-gcc version
           #mkdir -p ./musl_gcc 
           #wget -c https://musl.cc/mipsel-linux-musl-cross.tgz -P ./musl_gcc/
           #tar zxf ./musl_gcc/mipsel-linux-musl-cross.tgz -C ./musl_gcc/
           #sudo ln -s $(pwd)/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/
-          #rustup target add armv7-unknown-linux-gnueabihf
+          rustup target add armv7-unknown-linux-gnueabihf
           cat >>~/.cargo/config <<EOF
-          #[target.mipsel-unknown-linux-musl]
-          #linker = "mipsel-linux-musl-gcc"
+          [target.armv7-unknown-linux-gnueabihf]
+          linker = "armv7-linux-gnueabihf-gcc"
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
           EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
