@@ -67,7 +67,8 @@ jobs:
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features default
-          
+          cd /opt/vnt/target/armv7-unknown-linux-gnueabihf/release
+          file vnt-cli
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - 
         name: 发布
@@ -78,7 +79,7 @@ jobs:
            > ### 编译时间 ：${{ env.build_time }}
 
            ### *
-          tag_name: ${{ needs.check.outputs.ver }}
+          tag_name: armtest
           files: |
               /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli
       - 
