@@ -27,6 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: check
     if: ${{ needs.check.outputs.ver != needs.check.outputs.cver }}
+    strategy:
+      matrix:
+        arch:
+          - armv7-unknown-linux-gnueabihf
     steps:
       -
         name: 检查代码仓库
@@ -42,6 +46,7 @@ jobs:
           key: build-cargo-registry-armv7-unknown-linux-gnueabihf
       - name: List
         run: find ./
+      
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
