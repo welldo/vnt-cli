@@ -11,7 +11,7 @@ env:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04-8core-32gb
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: 构建gcc
@@ -19,7 +19,8 @@ jobs:
           git clone https://github.com/buildroot/buildroot.git /opt/buildroot
           [ -e $CONFIG_FILE ] && cp -rf $FEEDS_CONF /opt/buildroot/.config
           sudo chmod a+w /opt/buildroot
-          make -j8
+          echo -e "使用$(nproc)线程构建"
+          make -j$(nproc)
           cd /opt/buildroot/output/host/bin
           mipsel-linux-gcc --version
       
