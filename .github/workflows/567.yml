@@ -1,4 +1,4 @@
-name: 编译
+name: 编译uclibc
 
 on:
   #schedule:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: 构建gcc
+      - name: 构建
         run: |
           mkdir -p /opt/gcc
           wget -c https://archive.openwrt.org/chaos_calmer/15.05/ramips/mt7621/OpenWrt-SDK-15.05-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -P /opt/gcc/
