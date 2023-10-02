@@ -17,7 +17,7 @@ jobs:
       - name: 构建gcc
         run: |
           git clone https://github.com/buildroot/buildroot.git /opt/buildroot
-          [ -e $CONFIG_FILE ] && cp -rf $GITHUB_WORKSPACE/$FEEDS_CONF /opt/buildroot/.config
+          [ -e $CONFIG_FILE ] && mv $FEEDS_CONF /opt/buildroot/.config
           sudo chmod a+w /opt/buildroot
           echo -e "使用$(nproc)线程构建"
           make -j$(nproc)
