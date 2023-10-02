@@ -20,7 +20,6 @@ jobs:
           [ -e $CONFIG_FILE ] && cp -rf $CONFIG_FILE /opt/buildroot/.config
           sudo chmod a+w /opt/buildroot
           echo -e "使用$(nproc)线程构建"
-          make defconfig
           make -j$(nproc)
           cd /opt/buildroot/output/host/bin
           mipsel-linux-gcc --version
