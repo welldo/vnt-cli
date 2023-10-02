@@ -1,0 +1,25 @@
+name: 编译gcc
+
+on:
+  #schedule:
+    #- cron: '0 3,20 * * *'
+  workflow_dispatch:
+env:
+  CARGO_TERM_COLOR: always
+  CONFIG_FILE: .config
+  TZ: Asia/Shanghai
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04-8core-32gb
+    steps:
+      - uses: actions/checkout@v2
+      - name: 构建gcc
+        run: |
+          git clone https://github.com/buildroot/buildroot.git /opt/buildroot
+          [ -e $CONFIG_FILE ] && cp -rf $FEEDS_CONF /opt/buildroot/.config
+          sudo chmod a+w /opt/buildroot
+          make -j8
+          cd /opt/buildroot/output/host/bin
+          mipsel-linux-gcc --version
+      
