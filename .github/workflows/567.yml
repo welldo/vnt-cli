@@ -29,26 +29,26 @@ jobs:
            target = ["mipsel-unknown-linux-uclibc"]
            extended = true
            tools = ["cargo", "rls", "clippy", "rustfmt", "analysis", "src"]
-           prefix = "/opt/mispel"
+           prefix = "/opt/mipsel"
            sysconfdir = "etc"
            docdir = "share/doc/rust"
            bindir = "bin"
            libdir = "lib"
            mandir = "share/man"
 
-          [target.mips-unknown-linux-uclibc]
+          [target.mipsel-unknown-linux-uclibc]
           cc = "mipsel-openwrt-linux-uclibc-gcc"
           cxx = "mipsel-openwrt-linux-uclibc-c++"
           ar = "mipsel-openwrt-linux-uclibc-ar"
           linker = "mipsel-openwrt-linux-uclibc-gcc"
           EOF
           ./x.py build && ./x.py install
-          rustup toolchain link mipsel_toolchain /opt/mispel
+          rustup toolchain link mipsel_toolchain /opt/mipsel
           rustup show
           rustup default mipsel_toolchain
           rustup show
-          export PATH=$PATH:/opt/mispel/bin
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/mispel/lib
+          export PATH=$PATH:/opt/mipsel/bin
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/mipsel/lib
           cat >>~/.cargo/config <<EOF
           [target.mipsel-unknown-linux-uclibc]
           linker = "mipsel-openwrt-linux-uclibc-gcc"
