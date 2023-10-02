@@ -36,11 +36,6 @@ jobs:
            libdir = "lib"
            mandir = "share/man"
 
-          [target.mipsel-unknown-linux-uclibc]
-          cc = "mipsel-openwrt-linux-uclibc-gcc"
-          cxx = "mipsel-openwrt-linux-uclibc-c++"
-          ar = "mipsel-openwrt-linux-uclibc-ar"
-          linker = "mipsel-openwrt-linux-uclibc-gcc"
           EOF
           ./x.py build && ./x.py install
           rustup toolchain link mipsel_toolchain /opt/mipsel
