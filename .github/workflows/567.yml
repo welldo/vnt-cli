@@ -1,4 +1,4 @@
-name: 编译gcc
+name: 编译
 
 on:
   #schedule:
@@ -16,12 +16,50 @@ jobs:
       - uses: actions/checkout@v2
       - name: 构建gcc
         run: |
-          git clone https://github.com/buildroot/buildroot -b 2023.02.4 /opt/buildroot
-          [ -e $CONFIG_FILE ] && cp -rf $CONFIG_FILE /opt/buildroot/.config
-          sudo chmod a+w /opt/buildroot
-          echo -e "使用$(nproc)线程构建"
-          cd /opt/buildroot
-          make -j$(nproc)
-          cd /opt/buildroot/output/host/bin
-          mipsel-linux-gcc --version
+          mkdir -p /opt/gcc
+          wget -c https://archive.openwrt.org/chaos_calmer/15.05/ramips/mt7621/OpenWrt-SDK-15.05-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -P /opt/gcc/
+          tar -jxvf /opt/gcc/OpenWrt-SDK-15.05-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 -C /opt/gcc/
+          export PATH=$PATH:/opt/gcc/OpenWrt-SDK-15.05-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dirtoolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/
+          export STAGING_DIR=/opt/gcc/OpenWrt-SDK-15.05-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/staging_dir/toolchain-mipsel_1004kc+dsp_gcc-4.8-linaro_uClibc-0.9.33.2
+          export CC_mips_unknown_linux_uclibc=mipsel-openwrt-linux-uclibc-gcc
+          git clone https://github.com/rust-lang/rust -b 1.72.1 /opt/rust
+          cd /opt/rust
+          touch config.toml 
+           cat >>/opt/rust/config.toml <<EOF
+           target = ["mipsel-unknown-linux-uclibc"]
+           extended = true
+           tools = ["cargo", "rls", "clippy", "rustfmt", "analysis", "src"]
+           prefix = "/opt/mispel"
+           sysconfdir = "etc"
+           docdir = "share/doc/rust"
+           bindir = "bin"
+           libdir = "lib"
+           mandir = "share/man"
+
+          [target.mips-unknown-linux-uclibc]
+          cc = "mipsel-openwrt-linux-uclibc-gcc"
+          cxx = "mipsel-openwrt-linux-uclibc-c++"
+          ar = "mipsel-openwrt-linux-uclibc-ar"
+          linker = "mipsel-openwrt-linux-uclibc-gcc"
+          EOF
+          ./x.py build && ./x.py install
+          rustup toolchain link mipsel_toolchain /opt/mispel
+          rustup show
+          rustup default mipsel_toolchain
+          rustup show
+          export PATH=$PATH:/opt/mispel/bin
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/mispel/lib
+          cat >>~/.cargo/config <<EOF
+          [target.mipsel-unknown-linux-uclibc]
+          linker = "mipsel-openwrt-linux-uclibc-gcc"
+          ar = "mipsel-openwrt-linux-uclibc-ar"
+          ld = "mipsel-openwrt-linux-uclibc-ld"
+          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+          EOF
+          mipsel-openwrt-linux-uclibc-gcc --version
+          git clone https://github.com/lbl8603/vnt.git /opt/vnt
+          cd /opt/vnt
+          cargo build --package vnt-cli --target=mipsel-unknown-linux-uclibc --release --features default
+          /opt/vnt/target/mipsel-unknown-linux-uclibc/release
+          file vnt-cli
       
