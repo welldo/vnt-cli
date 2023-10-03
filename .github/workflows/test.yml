@@ -33,8 +33,6 @@ jobs:
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-gnueabihf]
           linker = "arm-unknown-linux-gnueabi-gcc"
-          AR=arm-unknown-linux-gnueabi-ar
-          LD=arm-unknown-linux-gnueabi-ld
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
           EOF
           cd /opt
