@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p /opt/musl_gcc 
           wget -c https://archive.openwrt.org/releases/17.01.0/targets/mvebu/generic/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64.tar.xz -P /opt/musl_gcc/
-          tar zxf /opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64.tar.xz -C /opt/musl_gcc/
+          tar -xvf /opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64.tar.xz -C /opt/musl_gcc/
           #sudo ln -s $(pwd)/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/
           rustup target add armv7-unknown-linux-musleabi
           export PATH=$PATH:/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin
