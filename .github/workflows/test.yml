@@ -29,10 +29,10 @@ jobs:
           rustup target add armv7-unknown-linux-gnueabihf
           export PATH=$PATH:/opt/musl_gcc/arm-unknown-linux-gnueabi/bin
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/arm-unknown-linux-gnueabi/lib/gcc/arm-unknown-linux-gnueabi/4.9.3
-          arm-openwrt-linux-gcc --version
+          arm-unknown-linux-gnueabi-gcc --version
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-gnueabihf]
-          linker = "arm-linux-arm-unknown-linux-gnueabi-gcc"
+          linker = "arm-unknown-linux-gnueabi-gcc"
           AR=arm-unknown-linux-gnueabi-ar
           LD=arm-unknown-linux-gnueabi-ld
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
