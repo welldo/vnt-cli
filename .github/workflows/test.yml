@@ -41,7 +41,7 @@ jobs:
           chmod 777 /opt/st/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          cross build --package vnt-cli --target=armv7-unknown-linux-musleabi --release --features default
+          cargo build --package vnt-cli --target=armv7-unknown-linux-musleabi --release --features default
           cd /opt/vnt/target/armv7-unknown-linux-musleabi/release
           file vnt-cli
           /opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
