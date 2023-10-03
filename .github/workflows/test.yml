@@ -36,25 +36,21 @@ jobs:
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
           EOF
           cd /opt
-          cargo new --bin hello
-          cd /opt/hello
-          cargo build --target=armv7-unknown-linux-gnueabihf 
-          cd /opt/hello/target/armv7-unknown-linux-gnueabihf/debug
-          file hello
-          mv hello hello_370
-          #git clone https://github.com/lbl8603/vnt.git /opt/vnt
+          git clone https://github.com/lbl8603/vnt.git /opt/vnt
           #git clone https://github.com/lmq8267/cloudflared.git /opt/st
           #tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
           #chmod 777 /opt/upx-4.1.0-amd64_linux/upx
           #chmod 777 /opt/st/strip
           #mkdir -p /opt/vnt-mipsel
-          #cd /opt/vnt
-          #cargo build --package vnt-cli --target=armv7-unknown-linux-musleabi --release --features default
-          #cd /opt/vnt/target/armv7-unknown-linux-musleabi/release
-          #file vnt-cli
+          cd /opt/vnt
+          cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --features default
+          vnt=$(find /opt/vnt -name "vnt-cli")
+          mv $vnt /opt/vnt-cli_370
+          cd /opt
+          file vnt-cli
           #/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
           #/opt/upx-4.1.0-amd64_linux/upx vnt-cli
-          #mv vnt-cli vnt-cli_armv7
+          #mv vnt-cli vnt-cli_370
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - 
         name: 发布
@@ -67,4 +63,4 @@ jobs:
            ### *
           tag_name: 370arm7
           files: |
-              /opt/hello/target/armv7-unknown-linux-gnueabihf/debug/hello_370
+              /opt/vnt-cli_370
