@@ -14,51 +14,39 @@ jobs:
     strategy:
       matrix:
         arch:
-          - armv7-unknown-linux-gnueabihf
+          - armv7-unknown-linux-musleabi
     steps:
      
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run: |
-          rustup set profile minimal
-          rustup toolchain install stable
-          rustup default stable
-          rustup override set stable
-          rustup target add --toolchain stable armv7-unknown-linux-gnueabihf
-          cargo install cross
       - 
         name: 编译
         run: |
-          cross build --target armv7-unknown-linux-gnueabihf --release
-          cross rustc --target armv7-unknown-linux-gnueabihf --release -- -C lto
-          armv7-linux-gnueabihf-gcc --version
-          #mkdir -p ./musl_gcc 
-          #wget -c https://musl.cc/mipsel-linux-musl-cross.tgz -P ./musl_gcc/
-          #tar zxf ./musl_gcc/mipsel-linux-musl-cross.tgz -C ./musl_gcc/
+          mkdir -p /opt/musl_gcc 
+          wget -c https://archive.openwrt.org/releases/17.01.0/targets/mvebu/generic/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64.tar.xz -P /opt/musl_gcc/
+          tar zxf /opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64.tar.xz -C /opt/musl_gcc/
           #sudo ln -s $(pwd)/musl_gcc/mipsel-linux-musl-cross/bin/*gcc /usr/bin/
-          #rustup target add armv7-unknown-linux-gnueabihf
-          #cat >>~/.cargo/config <<EOF
-          #[target.armv7-unknown-linux-gnueabihf]
-          #linker = "armv7-linux-gnueabihf-gcc"
-          #rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          #EOF
+          rustup target add armv7-unknown-linux-musleabi
+          export PATH=$PATH:/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/lib
+          arm-openwrt-linux-gcc --version
+          cat >>~/.cargo/config <<EOF
+          [target.armv7-unknown-linux-musleabi]
+          linker = "arm-openwrt-linux-gcc"
+          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+          EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
           git clone https://github.com/lmq8267/cloudflared.git /opt/st
-          tar -xvf /opt/st/upx-3.95-amd64_linux.tar.xz -C /opt
-          chmod 777 /opt/upx-3.95-amd64_linux/upx
+          tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
+          chmod 777 /opt/upx-4.1.0-amd64_linux/upx
           chmod 777 /opt/st/strip
           mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          sed -i '/[target.'cfg(target_os = "windows")'.dependencies]/d' ./vnt/Cargo.toml
-          sed -i '/win-tun-tap = { path = "./win-tun-tap" }/d' ./vnt/Cargo.toml
-          sed -i '/libloading = "0.7.4"/d' ./vnt/Cargo.toml
-          sed -i '/[target.'cfg(target_os = "windows")'.dependencies]/d' ./vnt-cli/Cargo.toml
-          sed -i '/winapi = { version = "0.3.9", features = ["handleapi", "processthreadsapi", "winnt", "securitybaseapi", "impl-default"] }/d' ./vnt-cli/Cargo.toml
-          cross build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features default
-          cd /opt/vnt/target/armv7-unknown-linux-gnueabihf/release
+          cross build --package vnt-cli --target=armv7-unknown-linux-musleabi --release --features default
+          cd /opt/vnt/target/armv7-unknown-linux-musleabi/release
           file vnt-cli
+          /opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
+          /opt/upx-4.1.0-amd64_linux/upx vnt-cli
+          mv vnt-cli vnt-cli_armv7
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - 
         name: 发布
@@ -71,7 +59,7 @@ jobs:
            ### *
           tag_name: armtest
           files: |
-              /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli
+              /opt/vnt/target/armv7-unknown-linux-musleabi/release/vnt-cli_armv7
       - 
        name: 删除工作流
        uses: GitRML/delete-workflow-runs@main
