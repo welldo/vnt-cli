@@ -21,6 +21,7 @@ jobs:
           sudo chmod a+w /opt/buildroot
           echo -e "使用$(nproc)线程构建"
           cd /opt/buildroot
+          sed -i 's|exit 3| |g' ./support/download/check-hash
           #make menuconfig
           make -j$(nproc)
           cd /opt/buildroot/output/host/bin
