@@ -45,7 +45,7 @@ jobs:
           cd /opt/vnt
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features openssl-vendored
           mv /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
-          /opt/musl_gcc/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-strip /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
+          #/opt/musl_gcc/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-strip /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
           file /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
           #cp /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
           #/opt/upx-4.1.0-amd64_linux/upx /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
