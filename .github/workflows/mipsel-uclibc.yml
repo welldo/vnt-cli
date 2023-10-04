@@ -79,7 +79,7 @@ jobs:
           EOF
           cd /opt/vnt
           #rustup target add mipsel-unknown-linux-uclibc
-          xargo build --package vnt-cli --target=mipsel-unknown-linux-uclibc --release --features default
+          xargo build --package vnt-cli --target=mipsel-unknown-linux-uclibc --features default
           mv /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli_mipsel_ssl_release_shared
           #/opt/musl_gcc/mipsel-unknown-linux-uclibc/bin/mipsel-linux-uclibc-strip /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli_mipsel_ssl_release_shared
           file /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli_mipsel_ssl_release_shared
