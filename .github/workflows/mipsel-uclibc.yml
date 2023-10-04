@@ -26,8 +26,8 @@ jobs:
           unzip /opt/musl_gcc/mipsel-n2nToolChain-uclibc-by-heiye.zip -d /opt/musl_gcc/
           export PATH=$PATH:/opt/musl_gcc/buildroot_output/output/mipsel/host/bin
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/buildroot_output/output/mipsel/host/lib:/opt/musl_gcc/buildroot_output/output/mipsel/host/mipsel-buildroot-linux-uclibc/lib
-          export OPENSSL_LIB_DIR=/opt/musl_gcc/openssl-1.1.1g/openssl/ mipsel/so/lib             
-          export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/openssl-1.1.1g/openssl/ mipsel/so/include/openssl
+          export OPENSSL_LIB_DIR=/opt/musl_gcc/openssl-1.1.1g/openssl/mipsel/so/lib             
+          export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/openssl-1.1.1g/openssl/mipsel/so/include/openssl
           rustup install nightly
           rustup default nightly
           rustup component add rust-src
