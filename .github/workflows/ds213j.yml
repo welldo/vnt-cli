@@ -19,7 +19,7 @@ jobs:
         id: getversion
         run: |
           ver=`curl https://api.github.com/repos/lbl8603/vnt/releases/latest | jq -r '.tag_name'`
-          cver=`curl https://api.github.com/repos/lucktu/vnt/releases/latest | jq -r '.tag_name'`
+          cver=`curl https://api.github.com/repos/lucktu/other/releases/latest | jq -r '.tag_name'`
           echo "ver=${ver}" >> $GITHUB_OUTPUT
           echo "cver=${cver}" >> $GITHUB_OUTPUT
 
@@ -35,7 +35,7 @@ jobs:
         name: 编译
         run: |
           mkdir -p /opt/musl_gcc 
-          wget -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/armada370-gcc493_glibc220_hard-GPL.txz -P /opt/musl_gcc/
+          wget -c https://github.com/lucktu/other/releases/download/2023-10-04/armada370-gcc493_glibc220_hard-GPL.txz -P /opt/musl_gcc/
           tar -Jxvf /opt/musl_gcc/armada370-gcc493_glibc220_hard-GPL.txz -C /opt/musl_gcc/
           rustup target add armv7-unknown-linux-gnueabihf
           export PATH=$PATH:/opt/musl_gcc/arm-unknown-linux-gnueabi/bin
@@ -62,7 +62,7 @@ jobs:
            **适用于群晖ds213j**
            
            **[官方更新说明](https://github.com/lbl8603/vnt/releases)**
-          tag_name: ${{ needs.check.outputs.ver }}
+          tag_name: vnt-cli_${{ needs.check.outputs.ver }}
           files: |
               /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli
       - 
