@@ -33,7 +33,7 @@ jobs:
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-gnueabi]
           linker = "arm-marvell-linux-gnueabi-gcc"
-          rustflags = ["-C", "target-feature=+crt-static"]
+          rustflags = ["-C", "target-feature=+crt-static","-C", "-gdwarf-2"]
           EOF
           cd /opt
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
