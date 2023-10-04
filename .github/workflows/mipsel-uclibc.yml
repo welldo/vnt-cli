@@ -33,7 +33,7 @@ jobs:
           rustup component add rust-src
           rustc -Vv
           cargo install xargo
-          mipsel-linux-uclibc-gcc --version
+          mipsel-linux-gcc --version
           cat >>~/.cargo/config <<EOF
           [target.mipsel-unknown-linux-uclibc]
           linker = "mipsel-linux-gcc"
