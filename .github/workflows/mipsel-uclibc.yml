@@ -26,7 +26,6 @@ jobs:
           tar -xzf /opt/musl_gcc/mipsel-linux-uclibc-by-hanwckf.tar.gz -C /opt/musl_gcc/
           export PATH=$PATH:/opt/musl_gcc/mipsel-linux-uclibc/bin
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/mipsel-linux-uclibc/lib
-          #rustup target add mipsel-unknown-linux-uclibc
           rustup install nightly
           rustup default nightly
           rustup component add rust-src
@@ -75,6 +74,7 @@ jobs:
           features = []
           EOF
           cd /opt/vnt
+          rustup target add mipsel-unknown-linux-uclibc
           xargo build --package vnt-cli --target=mipsel-linux-uclibc-gcc --release --features openssl-vendored
           mv /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli_mipsel_ssl_release_shared
           #/opt/musl_gcc/mipsel-linux-uclibc-gcc/bin/mipsel-linux-uclibc-strip /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli_mipsel_ssl_release_shared
