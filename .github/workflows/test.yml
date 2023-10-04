@@ -45,6 +45,7 @@ jobs:
           cd /opt/vnt
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --features default
           vnt=$(find /opt/vnt -name "vnt-cli")
+          echo $vnt
           mv $vnt /opt/vnt-cli_370
           cd /opt
           file vnt-cli
