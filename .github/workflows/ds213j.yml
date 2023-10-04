@@ -1,8 +1,8 @@
 name: 编译群晖ds213j_vnt-cli
 
 on:
-  schedule:
-    - cron: '0 3 * * *'
+  #schedule:
+    #- cron: '0 3 * * *'
   workflow_dispatch:
 env:
   TZ: Asia/Shanghai
