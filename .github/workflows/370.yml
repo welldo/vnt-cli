@@ -33,7 +33,7 @@ jobs:
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-gnueabi]
           linker = "arm-marvell-linux-gnueabi-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "-gdwarf-2"]
+          rustflags = ["-C", "target-feature=+crt-static"]
           EOF
           cd /opt
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
@@ -43,7 +43,7 @@ jobs:
           #chmod 777 /opt/st/strip
           #mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          cargo build --package vnt-cli --target armv7-unknown-linux-gnueabi --features default
+          cargo build --package vnt-cli --target armv7-unknown-linux-gnueabi --release --features default
           mv /opt/vnt/target/armv7-unknown-linux-gnueabi/debug/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabi/debug/vnt-cli_soft
           file /opt/vnt/target/armv7-unknown-linux-gnueabi/debug/vnt-cli_soft
           #/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
