@@ -49,7 +49,8 @@ jobs:
       - 
         name: 克隆源码编译
         run: |
-          git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
+          #git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
+          git clone https://github.com/lbl8603/vnt.git /opt/vnt
           cd /opt/vnt
           #默认编译全功能版 --features openssl-vendored
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features openssl-vendored
