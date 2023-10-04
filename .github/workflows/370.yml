@@ -44,8 +44,9 @@ jobs:
           #mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --features openssl-vendored
-          mv /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli_370_ssl
-          file /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli_370_ssl
+          mv /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli_370_ssl_strip
+          /opt/musl_gcc/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-strip /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli_370_ssl_strip
+          file /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli_370_ssl_strip
           #/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
           #/opt/upx-4.1.0-amd64_linux/upx vnt-cli
           #mv vnt-cli vnt-cli_370
@@ -61,4 +62,4 @@ jobs:
            ### *
           tag_name: 370arm7
           files: |
-              /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli_370_ssl
+              /opt/vnt/target/armv7-unknown-linux-gnueabihf/debug/vnt-cli_370_ssl_strip
