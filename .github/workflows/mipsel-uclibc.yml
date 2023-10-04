@@ -1,0 +1,94 @@
+name: 编译mipsel-uclibc_vnt
+
+on:
+  #schedule:
+    #- cron: '0 3,20 * * *'
+  workflow_dispatch:
+env:
+  CARGO_TERM_COLOR: always
+  TZ: Asia/Shanghai
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - mipsel-unknown-linux-uclibc
+    steps:
+     
+      - uses: actions/checkout@v2
+      - 
+        name: 编译
+        run: |
+          mkdir -p /opt/musl_gcc 
+          wget -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/mipsel-linux-uclibc-by-hanwckf.tar.gz -P /opt/musl_gcc/
+          tar -xzf /opt/musl_gcc/mipsel-linux-uclibc-by-hanwckf.tar.gz -C /opt/musl_gcc/
+          export PATH=$PATH:/opt/musl_gcc/mipsel-linux-uclibc/bin
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/mipsel-linux-uclibc/lib
+          #rustup target add mipsel-unknown-linux-uclibc
+          rustup install nightly
+          rustup default nightly
+          rustup component add rust-src
+          rustc -Vv
+          cargo install xargo
+          mipsel-linux-uclibc-gcc --version
+          cat >>~/.cargo/config <<EOF
+          [target.mipsel-unknown-linux-uclibc]
+          linker = "mipsel-linux-uclibc-gcc"
+          #rustflags = ["-C", "target-feature=+crt-static"]
+          EOF
+          git clone https://github.com/lbl8603/vnt.git /opt/vnt
+          #git clone https://github.com/lmq8267/cloudflared.git /opt/st
+          #tar -xvf /opt/st/upx-3.9.5-amd64_linux.tar.xz -C /opt
+          #chmod 777 /opt/upx-3.9.5-amd64_linux/upx
+          #chmod 777 /opt/st/strip
+          #mkdir -p /opt/vnt-mipsel
+          cd /opt/vnt
+          touch Xargo.toml
+          cat >>/opt/vnt/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/common
+          touch Xargo.toml
+          cat >>/opt/vnt/common/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/vnt-cli
+          touch Xargo.toml
+          cat >>/opt/vnt/vnt-cli/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/vnt-jni
+          touch Xargo.toml
+          cat >>/opt/vnt/vnt-jni/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/vnt
+          touch Xargo.toml
+          cat >>/opt/vnt/vnt/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt
+          xargo build --package vnt-cli --target=mipsel-linux-uclibc-gcc --release --features openssl-vendored
+          mv /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli_mipsel_ssl_release_shared
+          #/opt/musl_gcc/mipsel-linux-uclibc-gcc/bin/mipsel-linux-uclibc-strip /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli_mipsel_ssl_release_shared
+          file /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli_mipsel_ssl_release_shared
+          echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+      - 
+        name: 发布
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.c8 }}
+          body: |
+           > ### 编译时间 ：${{ env.build_time }}
+
+           ### *
+          tag_name: mipsel-uclibc
+          files: |
+              /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli_mipsel_ssl_release_shared
