@@ -37,6 +37,7 @@ jobs:
           cat >>~/.cargo/config <<EOF
           [target.mipsel-unknown-linux-uclibc]
           linker = "mipsel-linux-uclibc-gcc"
+          rustflags = ["-L", "native=/opt/musl_gcc/mipsel-linux-uclibc/lib"]
           #rustflags = ["-C", "target-feature=+crt-static"]
           EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
