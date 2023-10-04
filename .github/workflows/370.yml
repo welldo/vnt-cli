@@ -47,7 +47,7 @@ jobs:
           mv /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release
           /opt/musl_gcc/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-strip /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release
           file /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release
-          cp -f /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
+          cp /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
           /opt/upx-4.1.0-amd64_linux/upx /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
           #/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
           #/opt/upx-4.1.0-amd64_linux/upx vnt-cli
