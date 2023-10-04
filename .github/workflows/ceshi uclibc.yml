@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         arch:
-          - mipsel-unknown-linux-gnueabi
+          - mipsel-unknown-linux-gnu
     steps:
      
       - uses: actions/checkout@v2
@@ -29,9 +29,9 @@ jobs:
           #export OPENSSL_LIB_DIR=/opt/musl_gcc/mipsel-linux-uclibc/lib                
           #export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/mipsel-linux-uclibc/include
           mipsel-linux-uclibc-gcc --version
-          rustup target add mipsel-unknown-linux-gnueabi
+          rustup target add mipsel-unknown-linux-gnu
           cat >>~/.cargo/config <<EOF
-          [target.mipsel-unknown-linux-gnueabi]
+          [target.mipsel-unknown-linux-gnu]
           linker = "mipsel-linux-uclibc-gcc"
           rustflags = ["-L", "native=./resources/mipsel_openwrt_lib", "-C", "link-arg=-fPIC"]
           #rustflags = ["-C", "target-feature=+crt-static"]
@@ -43,10 +43,10 @@ jobs:
           #chmod 777 /opt/st/strip
           #mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          cargo build --package vnt-cli --target=mipsel-unknown-linux-gnueabi --release --features openssl-vendored
-          mv /opt/vnt/target/mipsel-unknown-linux-gnueabi/release/vnt-cli /opt/vnt/target/mipsel-unknown-linux-gnueabi/release/vnt-cli_mipsel_ssl_release_shared
-          #/opt/musl_gcc/mipsel-linux-uclibc/bin/mipsel-linux-uclibc-strip /opt/vnt/target/mipsel-unknown-linux-gnueabi/release/vnt-cli_mipsel_ssl_release_shared
-          file /opt/vnt/target/mipsel-unknown-linux-gnueabi/release/vnt-cli_mipsel_ssl_release_shared
+          cargo build --package vnt-cli --target=mipsel-unknown-linux-gnu --release --features openssl-vendored
+          mv /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
+          #/opt/musl_gcc/mipsel-linux-uclibc/bin/mipsel-linux-uclibc-strip /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
+          file /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - 
         name: 发布
@@ -59,4 +59,4 @@ jobs:
            ### *
           tag_name: mipsel-uclibc
           files: |
-              /opt/vnt/target/mipsel-unknown-linux-gnueabi/release/vnt-cli_mipsel_ssl_release_shared
+              /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
