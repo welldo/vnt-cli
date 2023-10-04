@@ -26,6 +26,8 @@ jobs:
           tar -xzf /opt/musl_gcc/mipsel-linux-uclibc-by-hanwckf.tar.gz -C /opt/musl_gcc/
           export PATH=$PATH:/opt/musl_gcc/mipsel-linux-uclibc/bin
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/mipsel-linux-uclibc/lib
+          export OPENSSL_LIB_DIR=/opt/musl_gcc/mipsel-linux-uclibc/lib                
+          export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/mipsel-linux-uclibc/include
           rustup install nightly
           rustup default nightly
           rustup component add rust-src
