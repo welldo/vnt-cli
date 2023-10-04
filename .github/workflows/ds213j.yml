@@ -39,7 +39,7 @@ jobs:
           tar -Jxvf /opt/musl_gcc/armada370-gcc493_glibc220_hard-GPL.txz -C /opt/musl_gcc/
           rustup target add armv7-unknown-linux-gnueabihf
           export PATH=$PATH:/opt/musl_gcc/arm-unknown-linux-gnueabi/bin
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/arm-unknown-linux-gnueabi/lib
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/arm-unknown-linux-gnueabi/lib/gcc/arm-unknown-linux-gnueabi/4.9.3
           rustup target add armv7-unknown-linux-gnueabihf
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-gnueabihf]
@@ -49,8 +49,7 @@ jobs:
       - 
         name: 克隆源码编译
         run: |
-          #git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
-          git clone https://github.com/lbl8603/vnt.git /opt/vnt
+          git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
           cd /opt/vnt
           #默认编译全功能版 --features openssl-vendored
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features openssl-vendored
