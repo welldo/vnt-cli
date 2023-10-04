@@ -22,22 +22,24 @@ jobs:
         name: 编译
         run: |
           mkdir -p /opt/musl_gcc 
-          wget -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/mipsel-linux-uclibc-by-hanwckf.tar.gz -P /opt/musl_gcc/
-          tar -xzf /opt/musl_gcc/mipsel-linux-uclibc-by-hanwckf.tar.gz -C /opt/musl_gcc/
-          export PATH=$PATH:/opt/musl_gcc/mipsel-linux-uclibc/bin
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/mipsel-linux-uclibc/lib
-          export OPENSSL_LIB_DIR=/opt/musl_gcc/mipsel-linux-uclibc/lib                
-          export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/mipsel-linux-uclibc/include/openssl
+          wget -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/mipsel-n2nToolChain-uclibc-by-heiye.zip -P /opt/musl_gcc/
+          unzip /opt/musl_gcc/mipsel-n2nToolChain-uclibc-by-heiye.zip -d /opt/musl_gcc/
+          export PATH=$PATH:/opt/musl_gcc/buildroot_output/output/mipsel/host/bin
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/buildroot_output/output/mipsel/host/lib:/opt/musl_gcc/buildroot_output/output/mipsel/host/mipsel-buildroot-linux-uclibc/lib
+          export OPENSSL_LIB_DIR=/opt/musl_gcc/openssl-1.1.1g/openssl/mipsel/so/lib             
+          export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/openssl-1.1.1g/openssl/mipsel/so/include/openssl
+          sudo chmod 777 -R /opt/musl_gcc
           rustup install nightly
           rustup default nightly
           rustup component add rust-src
           rustc -Vv
           cargo install xargo
-          mipsel-linux-uclibc-gcc --version
+          mipsel-linux-gcc --version
           cat >>~/.cargo/config <<EOF
           [target.mipsel-unknown-linux-uclibc]
-          linker = "mipsel-linux-uclibc-gcc"
-          rustflags = ["-C", "target-feature=+crt-static"]
+          linker = "mipsel-linux-gcc"
+          rustflags = ["-L", "native=/opt/musl_gcc/buildroot_output/output/mipsel/host/lib"]
+          #rustflags = ["-C", "target-feature=+crt-static"]
           EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
           #git clone https://github.com/lmq8267/cloudflared.git /opt/st
