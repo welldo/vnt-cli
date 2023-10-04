@@ -33,22 +33,22 @@ jobs:
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-gnueabihf]
           linker = "arm-unknown-linux-gnueabi-gcc"
-          rustflags = ["-C", "target-feature=+crt-static"]
+          #rustflags = ["-C", "target-feature=+crt-static"]
           EOF
           cd /opt
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
-          git clone https://github.com/lmq8267/cloudflared.git /opt/st
-          tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
-          chmod 777 /opt/upx-4.1.0-amd64_linux/upx
+          #git clone https://github.com/lmq8267/cloudflared.git /opt/st
+          #tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
+          #chmod 777 /opt/upx-4.1.0-amd64_linux/upx
           #chmod 777 /opt/st/strip
           #mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
           cargo build --package vnt-cli --target=armv7-unknown-linux-gnueabihf --release --features openssl-vendored
-          mv /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release
-          /opt/musl_gcc/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-strip /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release
-          file /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release
-          cp /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
-          /opt/upx-4.1.0-amd64_linux/upx /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
+          mv /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
+          /opt/musl_gcc/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-strip /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
+          file /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
+          #cp /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
+          #/opt/upx-4.1.0-amd64_linux/upx /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
           #/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
           #/opt/upx-4.1.0-amd64_linux/upx vnt-cli
           #mv vnt-cli vnt-cli_370
@@ -64,5 +64,4 @@ jobs:
            ### *
           tag_name: 370arm7
           files: |
-              /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release
-              /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_upx
+              /opt/vnt/target/armv7-unknown-linux-gnueabihf/release/vnt-cli_370_ssl_release_shared
