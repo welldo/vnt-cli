@@ -28,7 +28,7 @@ jobs:
           #sudo apt-get install -qq gcc-arm-linux-gnueabihf
           rustup target add armv7-unknown-linux-gnueabi
           export PATH=$PATH:/opt/musl_gcc/soft/bin
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/soft/lib
+          #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/soft/lib
           arm-marvell-linux-gnueabi-gcc --version
           cat >>~/.cargo/config <<EOF
           [target.armv7-unknown-linux-gnueabi]
@@ -43,7 +43,7 @@ jobs:
           #chmod 777 /opt/st/strip
           #mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          cargo build --package vnt-cli --target armv7-unknown-linux-gnueabi --release --features default
+          cargo build --package vnt-cli --target armv7-unknown-linux-gnueabi --features default
           mv /opt/vnt/target/armv7-unknown-linux-gnueabi/debug/vnt-cli /opt/vnt/target/armv7-unknown-linux-gnueabi/debug/vnt-cli_soft
           file /opt/vnt/target/armv7-unknown-linux-gnueabi/debug/vnt-cli_soft
           #/opt/musl_gcc/lede-sdk-17.01.0-mvebu_gcc-5.4.0_musl-1.1.16_eabi.Linux-x86_64/staging_dir/toolchain-arm_cortex-a9+vfpv3_gcc-5.4.0_musl-1.1.16_eabi/bin/arm-openwrt-linux-strip vnt-cli
