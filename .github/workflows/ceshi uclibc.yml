@@ -1,4 +1,4 @@
-name: 编译uclibc_vnt222
+name: 编译uclibc_vnt2222
 
 on:
   #schedule:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         arch:
-          - mipsel-unknown-linux-gnu
+          - mipsel-unknown-linux-uclibc
     steps:
      
       - uses: actions/checkout@v2
@@ -26,15 +26,18 @@ jobs:
           tar -xzf /opt/musl_gcc/mipsel-linux-uclibc-by-hanwckf.tar.gz -C /opt/musl_gcc/
           export PATH=$PATH:/opt/musl_gcc/mipsel-linux-uclibc/bin
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/musl_gcc/mipsel-linux-uclibc/lib
-          #export OPENSSL_LIB_DIR=/opt/musl_gcc/mipsel-linux-uclibc/lib                
-          #export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/mipsel-linux-uclibc/include
+          export OPENSSL_LIB_DIR=/opt/musl_gcc/mipsel-linux-uclibc/lib                
+          export OPENSSL_INCLUDE_DIR=/opt/musl_gcc/mipsel-linux-uclibc/include/openssl
+          rustup install nightly
+          rustup default nightly
+          rustup component add rust-src
+          rustc -Vv
+          cargo install xargo
           mipsel-linux-uclibc-gcc --version
-          rustup target add mipsel-unknown-linux-gnu
           cat >>~/.cargo/config <<EOF
-          [target.mipsel-unknown-linux-gnu]
+          [target.mipsel-unknown-linux-uclibc]
           linker = "mipsel-linux-uclibc-gcc"
-          rustflags = ["-L", "native=./resources/mipsel_openwrt_lib", "-C", "link-arg=-fPIC"]
-          #rustflags = ["-C", "target-feature=+crt-static"]
+          rustflags = ["-C", "target-feature=+crt-static"]
           EOF
           git clone https://github.com/lbl8603/vnt.git /opt/vnt
           #git clone https://github.com/lmq8267/cloudflared.git /opt/st
@@ -43,10 +46,41 @@ jobs:
           #chmod 777 /opt/st/strip
           #mkdir -p /opt/vnt-mipsel
           cd /opt/vnt
-          cargo build --package vnt-cli --target=mipsel-unknown-linux-gnu --release --features openssl-vendored
-          mv /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
-          #/opt/musl_gcc/mipsel-linux-uclibc/bin/mipsel-linux-uclibc-strip /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
-          file /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
+          touch Xargo.toml
+          cat >>/opt/vnt/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/common
+          touch Xargo.toml
+          cat >>/opt/vnt/common/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/vnt-cli
+          touch Xargo.toml
+          cat >>/opt/vnt/vnt-cli/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/vnt-jni
+          touch Xargo.toml
+          cat >>/opt/vnt/vnt-jni/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt/vnt
+          touch Xargo.toml
+          cat >>/opt/vnt/vnt/Xargo.toml <<EOF
+          [target.mipsel-unknown-linux-uclibc.dependencies.std]
+          features = []
+          EOF
+          cd /opt/vnt
+          #rustup target add mipsel-unknown-linux-uclibc
+          xargo build --package vnt-cli --target=mipsel-unknown-linux-uclibc --release --features openssl-vendored
+          mv /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli_mipsel_ssl_release_shared
+          #/opt/musl_gcc/mipsel-unknown-linux-uclibc/bin/mipsel-linux-uclibc-strip /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli_mipsel_ssl_release_shared
+          file /opt/vnt/target/mipsel-unknown-linux-uclibc/release/vnt-cli_mipsel_ssl_release_shared
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - 
         name: 发布
@@ -59,4 +93,4 @@ jobs:
            ### *
           tag_name: mipsel-uclibc
           files: |
-              /opt/vnt/target/mipsel-unknown-linux-gnu/release/vnt-cli_mipsel_ssl_release_shared
+              /opt/vnt/target/mipsel-linux-uclibc-gcc/release/vnt-cli_mipsel_ssl_release_shared
