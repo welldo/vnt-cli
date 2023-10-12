@@ -80,6 +80,7 @@ jobs:
                 MUSL_URI=mips-linux-musl-cross
                 ;;
             esac
+              echo "MUSL_URI=${MUSL_URI}" >> $GITHUB_ENV
               mkdir -p /opt/musl_gcc 
               wget -c https://musl.cc/$MUSL_URI.tgz -P /opt/musl_gcc/
               tar zxf /opt/musl_gcc/$MUSL_URI.tgz -C /opt/musl_gcc/
@@ -116,10 +117,10 @@ jobs:
           chmod 777 /opt/upx-3.95-amd64_linux/upx
           tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
           chmod 777 /opt/upx-4.1.0-amd64_linux/upx
-          chmod 777 /opt/musl_gcc/${MUSL_URI}/bin/${STRIP}
+          chmod 777 /opt/musl_gcc/${{ env.MUSL_URI }}/bin/${STRIP}
           mv /opt/vnt/target/${TARGET}/release/vnt-cli /opt/upx/${NAME}
           cd /opt/upx
-          /opt/musl_gcc/${MUSL_URI}/bin/${STRIP} ${NAME}
+          /opt/musl_gcc/${{ env.MUSL_URI }}/bin/${STRIP} ${NAME}
           if [[ $TARGET =~ ^mips*$ ]]; then
           /opt/upx-3.95-amd64_linux/upx --lzma --best ${NAME}
           else
