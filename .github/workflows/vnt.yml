@@ -82,7 +82,7 @@ jobs:
                 MUSL_URI=armv7l-linux-musleabihf-cross
                 ;;
               armv7-unknown-linux-musleabi)
-                MUSL_URI=armv7m-linux-musleabihf-cross
+                MUSL_URI=armv7m-linux-musleabi-cross
                 ;;
               arm-unknown-linux-musleabihf)
                 MUSL_URI=arm-linux-musleabihf-cross
