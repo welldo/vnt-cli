@@ -1,64 +1,59 @@
-name: Rust
+name: 编译压缩版vnt-cli
 
 on:
+  schedule:
+    - cron: '0 3,20 * * *'
   workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
-defaults:
-  run:
-    shell: bash
-
+  
 jobs:
-
-  build:
+ check:
+  runs-on: ubuntu-latest
+  outputs:
+    ver: ${{ steps.getversion.outputs.ver }}
+    cver: ${{ steps.getversion.outputs.cver }}
+  steps:
+  - name: 检查更新
+    id: getversion
+    run: |
+      ver=`curl https://api.github.com/repos/lbl8603/vnt/releases/latest | jq -r '.tag_name'`
+      cver=`curl https://api.github.com/repos/lmq8267/vnt-cli/releases/latest | jq -r '.tag_name'`
+      echo "ver=${ver}" >> $GITHUB_OUTPUT
+      echo "cver=${cver}" >> $GITHUB_OUTPUT
+ build:
     strategy:
       fail-fast: false
       matrix:
-        # a list of all the targets
-        # 选择使用openssl或者ring，并不是所有平台都支持
         include:
-          - TARGET: i686-unknown-linux-musl # test in an alpine container on a mac
-            OS: ubuntu-latest
-            FEATURES: default
-            STRIP: aarch64-linux-musl-
-          - TARGET: x86_64-unknown-linux-musl # test in an alpine container on a mac
+          - TARGET: aarch64-unknown-linux-musl
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
-          - TARGET: aarch64-unknown-linux-musl # tested on aws t4g.nano in alpine container
-            OS: ubuntu-latest
-            FEATURES: ring-cipher,openssl-vendored
-          - TARGET: armv7-unknown-linux-musleabihf # raspberry pi 2-3-4, not tested
+            STRIP: aarch64-linux-musl-strip
+          - TARGET: armv7-unknown-linux-musleabihf
             OS: ubuntu-latest
             FEATURES: openssl-vendored
-          - TARGET: arm-unknown-linux-musleabihf # raspberry pi 0-1, not tested
+            STRIP: armv7l-linux-musl-strip
+          - TARGET: arm-unknown-linux-musleabihf
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
-          - TARGET: x86_64-apple-darwin # tested on a mac, is not properly signed so there are security warnings
-            OS: macos-latest
-            FEATURES: ring-cipher,openssl-vendored
-          - TARGET: aarch64-apple-darwin # tested on a mac, is not properly signed so there are security warnings
-            OS: macos-latest
-            FEATURES: ring-cipher,openssl-vendored
-          - TARGET: i686-pc-windows-msvc # tested on a windows machine
-            OS: windows-2019
-            FEATURES: ring-cipher,openssl-vendored
-          - TARGET: x86_64-pc-windows-msvc # tested on a windows machine
-            OS: windows-latest
-            FEATURES: ring-cipher,openssl-vendored
-          - TARGET: mipsel-unknown-linux-musl # openwrt
+            STRIP: arm-linux-musl-strip
+          - TARGET: mipsel-unknown-linux-musl
             OS: ubuntu-latest
             FEATURES: openssl-vendored,ring-cipher
-          - TARGET: mips-unknown-linux-musl # openwrt
+            STRIP: mipsel-linux-musl-strip
+          - TARGET: mips-unknown-linux-musl
             OS: ubuntu-latest
             FEATURES: openssl-vendored
-    # needs: test
+            STRIP: mips-linux-musl-strip
     runs-on: ${{ matrix.OS }}
     env:
-      NAME: vnt-cli # change with the name of your project
+      NAME: vnt-cli_${{ matrix.TARGET }}
       TARGET: ${{ matrix.TARGET }}
       OS: ${{ matrix.OS }}
+      STRIP: ${{ matrix.STRIP }}
       FEATURES: ${{ matrix.FEATURES }}
     steps:
       - uses: actions/checkout@v2
@@ -71,18 +66,8 @@ jobs:
             ~/.cargo/registry
             ./target
           key: build-cargo-registry-${{matrix.TARGET}}
-      - name: Use strawberry perl
-        if: startsWith(matrix.os, 'windows')
-        run: echo OPENSSL_SRC_PERL=C:/Strawberry/perl/bin/perl >> $GITHUB_ENV
-      - name: List
-        run: find ./
-      - name: Install and configure dependencies
+      - name: 设置编译环境
         run: |
-          # dependencies are only needed on ubuntu as that's the only place where
-          # we make cross-compilation
-          if [[ $OS =~ ^ubuntu.*$ ]]; then
-            sudo apt-get update && sudo apt-get install -qq crossbuild-essential-arm64 crossbuild-essential-armhf musl-tools
-            #  curl -s musl.cc | grep mipsel
             case $TARGET in 
               mipsel-unknown-linux-musl)
                 MUSL_URI=mipsel-linux-musl-cross
@@ -100,94 +85,68 @@ jobs:
                 MUSL_URI=mips-linux-musl-cross
                 ;;
             esac
-          
-            if [  -n "$MUSL_URI" ]; then
-              mkdir -p ./musl_gcc 
-              wget -c https://musl.cc/$MUSL_URI.tgz -P ./musl_gcc/
-              tar zxf ./musl_gcc/$MUSL_URI.tgz -C ./musl_gcc/
-              sudo ln -s $(pwd)/musl_gcc/$MUSL_URI/bin/*gcc /usr/bin/
-              sudo ln -s $(pwd)/musl_gcc/$MUSL_URI/bin/*strip /usr/bin/
-            fi
-          fi
-          
-          
-          # some additional configuration for cross-compilation on linux
-          cat >>~/.cargo/config <<EOF
-          [target.x86_64-unknown-linux-musl]
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          [target.aarch64-unknown-linux-musl]
-          linker = "aarch64-linux-musl-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          [target.armv7-unknown-linux-musleabihf]
-          linker = "armv7l-linux-musleabihf-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          [target.arm-unknown-linux-musleabihf]
-          linker = "arm-linux-musleabihf-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          [target.mipsel-unknown-linux-musl]
-          linker = "mipsel-linux-musl-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          [target.mips-unknown-linux-musl]
-          linker = "mips-linux-musl-gcc"
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
-          [target.x86_64-pc-windows-msvc]
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]    
-          [target.i686-pc-windows-msvc]
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]      
-          [target.x86_64-apple-darwin]
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"] 
-          [target.aarch64-apple-darwin]
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]     
-          [target.i686-unknown-linux-musl]
-          rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]    
-          EOF
-      - name: Install rust target
+              mkdir -p /opt/musl_gcc 
+              wget -c https://musl.cc/$MUSL_URI.tgz -P /opt/musl_gcc/
+              tar zxf /opt/musl_gcc/$MUSL_URI.tgz -C /opt/musl_gcc/
+              sudo ln -s /opt/musl_gcc/$MUSL_URI/bin/*gcc /usr/bin/
+            cat >>~/.cargo/config <<EOF
+            [target.aarch64-unknown-linux-musl]
+            linker = "aarch64-linux-musl-gcc"
+            rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+             [target.armv7-unknown-linux-musleabihf]
+            linker = "armv7l-linux-musleabihf-gcc"
+            rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+            [target.arm-unknown-linux-musleabihf]
+            linker = "arm-linux-musleabihf-gcc"
+            rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+            [target.mipsel-unknown-linux-musl]
+            linker = "mipsel-linux-musl-gcc"
+            rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+            [target.mips-unknown-linux-musl]
+            linker = "mips-linux-musl-gcc"
+            rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]  
+            EOF
+      - name: 添加编译平台
         run: rustup target add $TARGET
-      - name: Run build
-        run: cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
-      - name: List target
-        run: find ./target
-      - name: Compress
+      - name: 开始编译
         run: |
-          mkdir -p ./artifacts
-          # windows is the only OS using a different convention for executable file name
-          if [[ $OS =~ ^windows.*$ ]]; then
-              EXEC=$NAME.exe
+          git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
+          cd /opt/vnt
+          cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
+      - name: 打包压缩
+        run: |
+          mkdir -p /opt/upx
+          git clone https://github.com/lmq8267/cloudflared.git /opt/st
+          tar -xvf /opt/st/upx-3.95-amd64_linux.tar.xz -C /opt
+          chmod 777 /opt/upx-3.95-amd64_linux/upx
+          tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
+          chmod 777 /opt/upx-4.1.0-amd64_linux/upx
+          chmod 777 /opt/musl_gcc/$MUSL_URI/bin/$STRIP
+          mv /opt/vnt/target/$TARGET/release/vnt-cli /opt/upx/$NAME
+          cd /opt/upx
+          /opt/musl_gcc/$MUSL_URI/bin/$STRIP $NAME
+          if [[ $TARGET =~ ^mips*$ ]]; then
+          /opt/upx-3.95-amd64_linux/upx --lzma --best $NAME
           else
-              EXEC=$NAME
+          /opt/upx-4.1.0-amd64_linux/upx --lzma --best $NAME
           fi
-          if [[ $GITHUB_REF_TYPE =~ ^tag$ ]]; then
-            TAG=$GITHUB_REF_NAME
-          else
-            TAG=$GITHUB_SHA
-          fi
-          mv ./target/$TARGET/release/$EXEC ./artifacts/$EXEC
-          
-          tar -czf ./artifacts/$NAME-$TARGET-$TAG.tar.gz -C ./artifacts $EXEC
-      - name: Archive artifact
-        uses: actions/upload-artifact@v2
+          echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+      - name: 发布
+        uses: softprops/action-gh-release@v1
         with:
-          name: vnt-cli
-          path: |
-            ./artifacts
-  # deploys to github releases on tag
-  deploy:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: vnt-cli
-          path: ./artifacts
-      - name: List
-        run: find ./artifacts
-      - name: Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.YOURTOKEN }}
-          file: ./artifacts/*.tar.gz
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+          token: ${{ secrets.c8 }}
+          body: |
+           > ### 编译时间 ：${{ env.build_time }}
+
+           [官方更新说明](https://github.com/lbl8603/vnt/releases)
+           
+          tag_name: ${{ needs.check.outputs.ver }}
+          files: |
+              /opt/upx/*
+      - 
+       name: 删除工作流
+       uses: GitRML/delete-workflow-runs@main
+       with:
+        token: ${{ secrets.c8 }}
+        retain_days: 2
+        keep_minimum_runs: 0
