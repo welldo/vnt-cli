@@ -37,11 +37,11 @@ jobs:
           - TARGET: armv7-unknown-linux-musleabihf
             OS: ubuntu-latest
             FEATURES: openssl-vendored
-            STRIP: armv7l-linux-musl-strip
+            STRIP: armv7l-linux-musleabihf-strip
           - TARGET: arm-unknown-linux-musleabihf
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
-            STRIP: arm-linux-musl-strip
+            STRIP: arm-linux-musleabihf-strip
           - TARGET: mipsel-unknown-linux-musl
             OS: ubuntu-latest
             FEATURES: openssl-vendored,ring-cipher
