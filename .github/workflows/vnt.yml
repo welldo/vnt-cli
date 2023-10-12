@@ -110,6 +110,7 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
+          rm -rf /opt/vnt
           git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
           cd /opt/vnt
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
