@@ -24,6 +24,8 @@ jobs:
       echo "ver=${ver}" >> $GITHUB_OUTPUT
       echo "cver=${cver}" >> $GITHUB_OUTPUT
  build:
+    needs: check
+    if: ${{ needs.check.outputs.ver != needs.check.outputs.cver }}
     strategy:
       fail-fast: false
       matrix:
