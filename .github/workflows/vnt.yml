@@ -59,13 +59,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Init submodules
         uses: snickerbockers/submodules-init@v4
-      - name: Cargo cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ./target
-          key: build-cargo-registry-${{matrix.TARGET}}
       - name: 设置编译环境
         run: |
             case $TARGET in 
@@ -110,7 +103,6 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
-          rm -rf /opt/vnt
           git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
           cd /opt/vnt
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
