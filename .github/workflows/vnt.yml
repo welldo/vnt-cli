@@ -132,7 +132,9 @@ jobs:
           token: ${{ secrets.c8 }}
           body: |
            > ### 编译时间 ：${{ env.build_time }}
-
+           
+           这是各平台的压缩版程序
+           
            [官方更新说明](https://github.com/lbl8603/vnt/releases)
            
           tag_name: ${{ needs.check.outputs.ver }}
