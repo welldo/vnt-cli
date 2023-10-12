@@ -116,14 +116,14 @@ jobs:
           chmod 777 /opt/upx-3.95-amd64_linux/upx
           tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
           chmod 777 /opt/upx-4.1.0-amd64_linux/upx
-          chmod 777 /opt/musl_gcc/$MUSL_URI/bin/$STRIP
-          mv /opt/vnt/target/$TARGET/release/vnt-cli /opt/upx/$NAME
+          chmod 777 /opt/musl_gcc/${MUSL_URI}/bin/${STRIP}
+          mv /opt/vnt/target/${TARGET}/release/vnt-cli /opt/upx/${NAME}
           cd /opt/upx
-          /opt/musl_gcc/$MUSL_URI/bin/$STRIP $NAME
+          /opt/musl_gcc/${MUSL_URI}/bin/${STRIP} ${NAME}
           if [[ $TARGET =~ ^mips*$ ]]; then
-          /opt/upx-3.95-amd64_linux/upx --lzma --best $NAME
+          /opt/upx-3.95-amd64_linux/upx --lzma --best ${NAME}
           else
-          /opt/upx-4.1.0-amd64_linux/upx --lzma --best $NAME
+          /opt/upx-4.1.0-amd64_linux/upx --lzma --best ${NAME}
           fi
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - name: 发布
