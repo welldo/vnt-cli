@@ -10,7 +10,7 @@ changelog-seen = 2
 #download-ci-llvm = if rust.channel == "dev" { "if-available" } else { false }
 
 # LLVM 构建是发布还是调试构建
-optimize = true
+#optimize = true
 
 # LLVM 是否应使用 ThinLTO 构建。
 #thin-lto = false
@@ -25,7 +25,7 @@ optimize = true
 #tests = false
 
 # LLVM插件是否启用
-plugins = true
+#plugins = true
 
 # 指示构建LLVM时是否使用ccache。设置为“true”以使用第一个“ccache”
 #ccache = false
@@ -70,7 +70,7 @@ ninja = true
 #allow-old-toolchain = false
 
 # 是否包含 Polly 优化器。
-polly = true
+#polly = true
 
 # 是否构建 clang 编译器。
 #clang = true
