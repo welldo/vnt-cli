@@ -1,868 +1,497 @@
-# Sample TOML configuration file for building Rust.
-#
-# To configure rustbuild, run `./configure` or `./x.py setup`.
-# See https://rustc-dev-guide.rust-lang.org/building/how-to-build-and-run.html#create-a-configtoml for more information.
-#
-# All options are commented out by default in this file, and they're commented
-# out with their default values. The build system by default looks for
-# `config.toml` in the current directory of a build for build configuration, but
-# a custom configuration file can also be specified with `--config` to the build
-# system.
+
+changelog-seen = 2
 
 # =============================================================================
-# Global Settings
-# =============================================================================
-
-# Use different pre-set defaults than the global defaults.
-#
-# See `src/bootstrap/defaults` for more information.
-# Note that this has no default value (x.py uses the defaults in `config.example.toml`).
-#profile = <none>
-
-# Keeps track of major changes made to this configuration.
-#
-# This value also represents ID of the PR that caused major changes. Meaning,
-# you can visit github.com/rust-lang/rust/pull/{change-id} to check for more details.
-#
-# A 'major change' includes any of the following
-#  - A new option
-#  - A change in the default values
-#
-# If `change-id` does not match the version that is currently running,
-# `x.py` will prompt you to update it and check the related PR for more details.
-change-id = 115898
-
-# =============================================================================
-# Tweaking how LLVM is compiled
+# 调整 LLVM 的编译方式
 # =============================================================================
 [llvm]
 
-# Whether to use Rust CI built LLVM instead of locally building it.
-#
-# Unless you're developing for a target where Rust CI doesn't build a compiler
-# toolchain or changing LLVM locally, you probably want to leave this enabled.
-#
-# All tier 1 targets are currently supported; set this to `"if-available"` if
-# you are not sure whether you're on a tier 1 target.
-#
-# We also currently only support this when building LLVM for the build triple.
-#
-# Note that many of the LLVM options are not currently supported for
-# downloading. Currently only the "assertions" option can be toggled.
+# 是否使用 Rust CI 构建 LLVM，而不是本地构建它。
 #download-ci-llvm = if rust.channel == "dev" { "if-available" } else { false }
 
-# Indicates whether the LLVM build is a Release or Debug build
+# LLVM 构建是发布还是调试构建
 optimize = true
 
-# Indicates whether LLVM should be built with ThinLTO. Note that this will
-# only succeed if you use clang, lld, llvm-ar, and llvm-ranlib in your C/C++
-# toolchain (see the `cc`, `cxx`, `linker`, `ar`, and `ranlib` options below).
-# More info at: https://clang.llvm.org/docs/ThinLTO.html#clang-bootstrap
-thin-lto = true
+# LLVM 是否应使用 ThinLTO 构建。
+#thin-lto = false
 
-# Indicates whether an LLVM Release build should include debug info
+# LLVM 版本构建是否应包含调试信息
 #release-debuginfo = false
 
-# Indicates whether the LLVM assertions are enabled or not
-# NOTE: When assertions are disabled, bugs in the integration between rustc and LLVM can lead to
-# unsoundness (segfaults, etc.) in the rustc process itself, not just in the generated code.
+# 是否启用 LLVM 断言
 #assertions = false
 
-# Indicates whether the LLVM testsuite is enabled in the build or not. Does
-# not execute the tests as part of the build as part of x.py build et al,
-# just makes it possible to do `ninja check-llvm` in the staged LLVM build
-# directory when doing LLVM development as part of Rust development.
+# 是否在构建中启用 LLVM 测试套件。
 #tests = false
 
-# Indicates whether the LLVM plugin is enabled or not
+# LLVM插件是否启用
 plugins = true
 
-# Indicates whether ccache is used when building LLVM. Set to `true` to use the first `ccache` in
-# PATH, or set an absolute path to use a specific version.
+# 指示构建LLVM时是否使用ccache。设置为“true”以使用第一个“ccache”
 #ccache = false
 
-# When true, link libstdc++ statically into the rustc_llvm.
-# This is useful if you don't want to use the dynamic version of that
-# library provided by LLVM.
-static-libstdcpp = true
+# 如果为 true，则将 libstdc++ 静态链接到 rustc_llvm。
+#static-libstdcpp = false
 
-# Whether to use Ninja to build LLVM. This runs much faster than make.
+# 是否使用Ninja构建LLVM。这比 make 运行得快得多。
 ninja = true
 
-# LLVM targets to build support for.
-# Note: this is NOT related to Rust compilation targets. However, as Rust is
-# dependent on LLVM for code generation, turning targets off here WILL lead to
-# the resulting rustc being unable to compile for the disabled architectures.
-#
-# To add support for new targets, see https://rustc-dev-guide.rust-lang.org/building/new-target.html.
-#targets = "AArch64;ARM;BPF;Hexagon;LoongArch;MSP430;Mips;NVPTX;PowerPC;RISCV;Sparc;SystemZ;WebAssembly;X86"
+# LLVM 目标构建支持。
+# 要添加对新目标的支持，请参阅 https://rustc-dev-guide.rust-lang.org/building/new-target.html.
+targets = "mipsel-unknown-linux-uclibc"
 
-# LLVM experimental targets to build support for. These targets are specified in
-# the same format as above, but since these targets are experimental, they are
-# not built by default and the experimental Rust compilation targets that depend
-# on them will not work unless the user opts in to building them.
+# 构建支持的 LLVM 实验目标。
 #experimental-targets = "AVR;M68k;CSKY"
 
-# Cap the number of parallel linker invocations when compiling LLVM.
-# This can be useful when building LLVM with debug info, which significantly
-# increases the size of binaries and consequently the memory required by
-# each linker process.
-# If set to 0, linker invocations are treated like any other job and
-# controlled by rustbuild's -j parameter.
+# 编译 LLVM 时限制并行链接器调用的数量。
 #link-jobs = 0
 
-# Whether to build LLVM as a dynamically linked library (as opposed to statically linked).
-# Under the hood, this passes `--shared` to llvm-config.
-# NOTE: To avoid performing LTO multiple times, we suggest setting this to `true` when `thin-lto` is enabled.
+# 是否将 LLVM 构建为动态链接库（而不是静态链接）。.
 #link-shared = llvm.thin-lto
 
-# When building llvm, this configures what is being appended to the version.
-# To use LLVM version as is, provide an empty string.
+# 构建 llvm 时，这会配置附加到版本的内容。
 #version-suffix = if rust.channel == "dev" { "-rust-dev" } else { "-rust-$version-$channel" }
 
-# On MSVC you can compile LLVM with clang-cl, but the test suite doesn't pass
-# with clang-cl, so this is special in that it only compiles LLVM with clang-cl.
-# Note that this takes a /path/to/clang-cl, not a boolean.
+# 在 MSVC 上，您可以使用 clang-cl 编译 LLVM，但测试套件未通过
 #clang-cl = cc
 
-# Pass extra compiler and linker flags to the LLVM CMake build.
+# 将额外的编译器和链接器标志传递给 LLVM CMake 构建。
 #cflags = ""
 #cxxflags = ""
 #ldflags = ""
 
-# Use libc++ when building LLVM instead of libstdc++. This is the default on
-# platforms already use libc++ as the default C++ library, but this option
-# allows you to use libc++ even on platforms when it's not. You need to ensure
-# that your host compiler ships with libc++.
+# 构建 LLVM 时使用 libc++ 而不是 libstdc++。这是默认的.
 #use-libcxx = false
 
-# The value specified here will be passed as `-DLLVM_USE_LINKER` to CMake.
+# 此处指定的值将作为“-DLLVM_USE_LINKER”传递给 CMake。
 #use-linker = <none> (path)
 
-# Whether or not to specify `-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=YES`
+# 是否指定 `-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=YES`
 #allow-old-toolchain = false
 
-# Whether to include the Polly optimizer.
-#polly = false
+# 是否包含 Polly 优化器。
+#polly = true
 
-# Whether to build the clang compiler.
-#clang = false
+# 是否构建 clang 编译器。
+#clang = true
 
-# Whether to enable llvm compilation warnings.
+# 是否启用llvm编译警告。
 #enable-warnings = false
 
-# Custom CMake defines to set when building LLVM.
+# 自定义 CMake 定义在构建 LLVM 时设置。
 #build-config = {}
 
 # =============================================================================
-# General build configuration options
+# 常规构建配置选项
 # =============================================================================
 [build]
 
-# The default stage to use for the `check` subcommand
+# 用于“check”子命令的默认阶段
 #check-stage = 0
 
-# The default stage to use for the `doc` subcommand
+# 用于“doc”子命令的默认阶段
 #doc-stage = 0
 
-# The default stage to use for the `build` subcommand
+# 用于“build”子命令的默认阶段
 #build-stage = 1
 
-# The default stage to use for the `test` subcommand
+# 用于“test”子命令的默认阶段
 #test-stage = 1
 
-# The default stage to use for the `dist` subcommand
+# 用于“dist”子命令的默认阶段
 #dist-stage = 2
 
-# The default stage to use for the `install` subcommand
+# 用于“install”子命令的默认阶段
 #install-stage = 2
 
-# The default stage to use for the `bench` subcommand
+# 用于“bench”子命令的默认阶段
 #bench-stage = 2
 
-# Build triple for the pre-compiled snapshot compiler. If `rustc` is set, this must match its host
-# triple (see `rustc --version --verbose`; cross-compiling the rust build system itself is NOT
-# supported). If `rustc` is unset, this must be a platform with pre-compiled host tools
-# (https://doc.rust-lang.org/nightly/rustc/platform-support.html). The current platform must be
-# able to run binaries of this build triple.
-#
-# If `rustc` is present in path, this defaults to the host it was compiled for.
-# Otherwise, `x.py` will try to infer it from the output of `uname`.
-# If `uname` is not found in PATH, we assume this is `x86_64-pc-windows-msvc`.
-# This may be changed in the future.
-#build = "x86_64-unknown-linux-gnu" (as an example)
+# 为预编译快照编译器构建三元组。
+#build = "x86_64-unknown-linux-gnu"
 
-# Which triples to produce a compiler toolchain for. Each of these triples will be bootstrapped from
-# the build triple themselves. In other words, this is the list of triples for which to build a
-# compiler that can RUN on that triple.
-#
-# Defaults to just the `build` triple.
-#host = [build.build] (list of triples)
+# 默认为“build”三元组。
+#host = [build.build] (三元组列表)
 
-# Which triples to build libraries (core/alloc/std/test/proc_macro) for. Each of these triples will
-# be bootstrapped from the build triple themselves. In other words, this is the list of triples for
-# which to build a library that can CROSS-COMPILE to that triple.
-#
-# Defaults to `host`. If you set this explicitly, you likely want to add all
-# host triples to this list as well in order for those host toolchains to be
-# able to compile programs for their native target.
-#target = build.host (list of triples)
+# 默认为“主机”。
+#target = mipsel-unknown-linux-uclibc
+target = ["mipsel-unknown-linux-uclibc"]
+#build.target = ["mipsel-unknown-linux-uclibc"]
+# 使用此目录来存储构建工件。路径是相对于当前目录的
+build-dir = "build"
 
-# Use this directory to store build artifacts. Paths are relative to the current directory, not to
-# the root of the repository.
-#build-dir = "build"
-
-# Instead of downloading the src/stage0.json version of Cargo specified, use
-# this Cargo binary instead to build all Rust code
-# If you set this, you likely want to set `rustc` as well.
+# 不要下载指定的 Cargo src/stage0.json 版本，而是使用cargo
 #cargo = "/path/to/cargo"
 
-# Instead of downloading the src/stage0.json version of the compiler
-# specified, use this rustc binary instead as the stage0 snapshot compiler.
-# If you set this, you likely want to set `cargo` as well.
+# 而不是下载 src/stage0.json 版本的编译器,如果指定，请使用此 rustc 二进制文件作为 stage0 快照编译器。如果你设置了这个，你可能还想设置“cargo”。
 #rustc = "/path/to/rustc"
 
-# Instead of downloading the src/stage0.json version of rustfmt specified,
-# use this rustfmt binary instead as the stage0 snapshot rustfmt.
+# 而不是下载指定的 rustfmt 的 src/stage0.json 版本，使用此 rustfmt 二进制文件作为 stage0 快照 rustfmt。
 #rustfmt = "/path/to/rustfmt"
 
-# Whether to build documentation by default. If false, rustdoc and
-# friends will still be compiled but they will not be used to generate any
-# documentation.
-#
-# You can still build documentation when this is disabled by explicitly passing paths,
-# e.g. `x doc library`.
+# 是否默认构建文档。
 #docs = true
 
-# Flag to specify whether CSS, JavaScript, and HTML are minified when
-# docs are generated. JSON is always minified, because it's enormous,
-# and generated in already-minified form from the beginning.
+# 当通过显式传递路径禁用此功能时，您仍然可以构建文档
 #docs-minification = true
 
-# Flag to specify whether private items should be included in the library docs.
+# 用于指定 CSS、JavaScript 和 HTML 是否在以下情况下缩小的标志
 #library-docs-private-items = false
 
-# Indicate whether to build compiler documentation by default.
-# You can still build documentation when this is disabled by explicitly passing a path: `x doc compiler`.
+# 用于指定私有项目是否应包含在库文档中的标志。
 #compiler-docs = false
 
-# Indicate whether git submodules are managed and updated automatically.
+# 指示 git 子模块是否自动管理和更新。
 #submodules = true
 
-# The path to (or name of) the GDB executable to use. This is only used for
-# executing the debuginfo test suite.
+# 要使用的 GDB 可执行文件的路径（或名称）。
 #gdb = "gdb"
 
-# The node.js executable to use. Note that this is only used for the emscripten
-# target when running tests, otherwise this can be omitted.
+# 要使用的 node.js 可执行文件。
 #nodejs = "node"
 
-# The npm executable to use. Note that this is used for rustdoc-gui tests,
-# otherwise this can be omitted.
-#
-# Under Windows this should be `npm.cmd` or path to it (verified on nodejs v18.06), or
-# error will be emitted.
+# 要使用的 npm 可执行文件。
 #npm = "npm"
 
-# Python interpreter to use for various tasks throughout the build, notably
-# rustdoc tests, the lldb python interpreter, and some dist bits and pieces.
-#
-# Defaults to the Python interpreter used to execute x.py.
+# Python 解释器用于整个构建过程中的各种任务
 #python = "python"
 
-# The path to the REUSE executable to use. Note that REUSE is not required in
-# most cases, as our tooling relies on a cached (and shrunk) copy of the
-# REUSE output present in the git repository and in our source tarballs.
-#
-# REUSE is only needed if your changes caused the overall licensing of the
-# repository to change, and the cached copy has to be regenerated.
-#
-# Defaults to the "reuse" command in the system path.
+# 要使用的 REUSE 可执行文件的路径。
 #reuse = "reuse"
 
-# Force Cargo to check that Cargo.lock describes the precise dependency
-# set that all the Cargo.toml files create, instead of updating it.
+# 强制 Cargo 检查 Cargo.lock 是否描述了精确的依赖关系
 #locked-deps = false
 
-# Indicate whether the vendored sources are used for Rust dependencies or not.
-#
-# Vendoring requires additional setup. We recommend using the pre-generated source tarballs if you
-# want to use vendoring. See
-# https://forge.rust-lang.org/infra/other-installation-methods.html#source-code.
+# 供应商的源是否用于 Rust 依赖项。
 #vendor = false
 
-# Typically the build system will build the Rust compiler twice. The second
-# compiler, however, will simply use its own libraries to link against. If you
-# would rather to perform a full bootstrap, compiling the compiler three times,
-# then you can set this option to true.
-#
-# This is only useful for verifying that rustc generates reproducible builds.
+# 通常，构建系统会构建 Rust 编译器两次。
 #full-bootstrap = false
 
-# Enable a build of the extended Rust tool set which is not only the compiler
-# but also tools such as Cargo. This will also produce "combined installers"
-# which are used to install Rust and Cargo together.
-# The `tools` (check `config.example.toml` to see its default value) option specifies
-# which tools should be built if `extended = true`.
-#
-# This is disabled by default.
-#extended = false
+# 启用扩展 Rust 工具集的构建，而不仅仅是编译器
+extended = true
 
-# Set of tools to be included in the installation.
-#
-# If `extended = false`, the only one of these built by default is rustdoc.
-#
-# If `extended = true`, they're all included, with the exception of
-# rust-demangler which additionally requires `profiler = true` to be set.
-#
-# If any enabled tool fails to build, the installation fails.
-#tools = [
-#    "cargo",
-#    "clippy",
-#    "rustdoc",
-#    "rustfmt",
-#    "rust-analyzer",
-#    "analysis",
-#    "src",
+# 安装中包含的工具集。
+ tools = [
+     "cargo",
+     "rls",
+     "clippy",
+     "rustdoc",
+     "rustfmt",
+     "rust-analyzer",
+     "analysis",
+     "src",
 #    "rust-demangler",  # if profiler = true
-#]
+ ]
 
-# Verbosity level: 0 == not verbose, 1 == verbose, 2 == very verbose, 3 == print environment variables on each rustc invocation
+# 详细级别：0 == 不详细，1 == 详细，2 == 非常详细，3 == 在每个 rustc 调用上打印环境变量
 #verbose = 0
 
-# Build the sanitizer runtimes
+# 构建sanitizers运行时
 #sanitizers = false
 
-# Build the profiler runtime (required when compiling with options that depend
-# on this runtime, such as `-C profile-generate` or `-C instrument-coverage`).
+# 构建探查器运行时（使用依赖于的选项进行编译时需要在此运行时，例如“-C profile-generate”或“-C Instrument-coverage”）。
 #profiler = false
 
-# Indicates whether the native libraries linked into Cargo will be statically
-# linked or not.
+# 指示链接到 Cargo 的本机库是否是静态的
 #cargo-native-static = false
 
-# Run the build with low priority, by setting the process group's "nice" value
-# to +10 on Unix platforms, and by using a "low priority" job object on Windows.
+# 通过设置进程组的“nice”值，以低优先级运行构建
 #low-priority = false
 
-# Arguments passed to the `./configure` script, used during distcheck. You
-# probably won't fill this in but rather it's filled in by the `./configure`
-# script. Useful for debugging.
+# 传递给 `./configure` 脚本的参数，在 distcheck 期间使用。
 #configure-args = []
 
-# Indicates that a local rebuild is occurring instead of a full bootstrap,
-# essentially skipping stage0 as the local compiler is recompiling itself again.
-# Useful for modifying only the stage2 compiler without having to pass `--keep-stage 0` each time.
+# 指示正在进行本地重建而不是完整引导
 #local-rebuild = false
 
-# Print out how long each rustbuild step took (mostly intended for CI and
-# tracking over time)
+# 打印出每个 rustbuild 步骤花费了多长时间
 #print-step-timings = false
 
-# Print out resource usage data for each rustbuild step, as defined by the Unix
-# struct rusage. (Note that this setting is completely unstable: the data it
-# captures, what platforms it supports, the format of its associated output, and
-# this setting's very existence, are all subject to change.)
+# 按照 Unix 的定义，打印每个 rustbuild 步骤的资源使用数据结构用法。
 #print-step-rusage = false
 
-# Always patch binaries for usage with Nix toolchains. If `true` then binaries
-# will be patched unconditionally. If `false` or unset, binaries will be patched
-# only if the current distribution is NixOS. This option is useful when using
-# a Nix toolchain on non-NixOS distributions.
+# 始终修补二进制文件以与 Nix 工具链一起使用。
 #patch-binaries-for-nix = false
 
-# Collect information and statistics about the current build and writes it to
-# disk. Enabling this or not has no impact on the resulting build output. The
-# schema of the file generated by the build metrics feature is unstable, and
-# this is not intended to be used during local development.
+# 收集有关当前构建的信息和统计数据并将其写入磁盘。
 #metrics = false
-target = ["mipsel-unknown-linux-uclibc"]
-extended = true
-tools = ["cargo", "rls", "clippy", "rustfmt", "analysis", "src"]
+
 # =============================================================================
-# General install configuration options
+# 常规安装配置选项
 # =============================================================================
 [install]
 
-prefix = "/opt/mipsel"
-sysconfdir = "etc"
+# 在哪里安装生成的工具链。必须是绝对路径。
+prefix = "/opt/mipsel-rust"
+
+# 安装系统配置文件的位置。如果这是相对路径，它将安装在上面的“前缀”中
+sysconfdir = "/etc"
+
+# 上面`prefix`中的文档安装位置
 docdir = "share/doc/rust"
+
+# 在上面的“前缀”中安装二进制文件的位置
 bindir = "bin"
+
+# 在上面的`prefix`中安装库的位置
 libdir = "lib"
+
+# 在上面的`prefix`中安装手册页的位置
 mandir = "share/man"
-# Where to install the generated toolchain. Must be an absolute path.
-#prefix = "/usr/local"
 
-# Where to install system configuration files.
-# If this is a relative path, it will get installed in `prefix` above
-#sysconfdir = "/etc"
-
-# Where to install documentation in `prefix` above
-#docdir = "share/doc/rust"
-
-# Where to install binaries in `prefix` above
-#bindir = "bin"
-
-# Where to install libraries in `prefix` above
-#libdir = "lib"
-
-# Where to install man pages in `prefix` above
-#mandir = "share/man"
-
-# Where to install data in `prefix` above
-#datadir = "share"
+# 上面`prefix`中的数据安装在哪里
+datadir = "share"
 
 # =============================================================================
-# Options for compiling Rust code itself
+# 编译 Rust 代码本身的选项
 # =============================================================================
 [rust]
 
-# Whether or not to optimize when compiling the compiler and standard library,
-# and what level of optimization to use.
-# WARNING: Building with optimize = false is NOT SUPPORTED. Due to bootstrapping,
-# building without optimizations takes much longer than optimizing. Further, some platforms
-# fail to build without this optimization (c.f. #65352).
-# The valid options are:
-# true - Enable optimizations.
-# false - Disable optimizations.
-# 0 - Disable optimizations.
-# 1 - Basic optimizations.
-# 2 - Some optimizations.
-# 3 - All optimizations.
-# "s" - Optimize for binary size.
-# "z" - Optimize for binary size, but also turn off loop vectorization.
-#optimize = true
+# 编译器和标准库编译时是否进行优化，以及使用什么级别的优化。警告：不支持使用 optimize = false 进行构建
+# 有效的选项是：
+#true - 启用优化。
+#false - 禁用优化。
+#0 - 禁用优化。
+#1 - 基本优化。
+#2 - 一些优化。
+#3 - 所有优化。
+#“s” - 优化二进制大小。
+#“z” - 优化二进制大小，但也关闭循环矢量化。
+optimize = true
 
-# Indicates that the build should be configured for debugging Rust. A
-# `debug`-enabled compiler and standard library will be somewhat
-# slower (due to e.g. checking of debug assertions) but should remain
-# usable.
-#
-# Note: If this value is set to `true`, it will affect a number of
-#       configuration options below as well, if they have been left
-#       unconfigured in this file.
-#
-# Note: changes to the `debug` setting do *not* affect `optimize`
-#       above. In theory, a "maximally debuggable" environment would
-#       set `optimize` to `false` above to assist the introspection
-#       facilities of debuggers like lldb and gdb. To recreate such an
-#       environment, explicitly set `optimize` to `false` and `debug`
-#       to `true`. In practice, everyone leaves `optimize` set to
-#       `true`, because an unoptimized rustc with debugging
-#       enabled becomes *unusably slow* (e.g. rust-lang/rust#24840
-#       reported a 25x slowdown) and bootstrapping the supposed
-#       "maximally debuggable" environment (notably libstd) takes
-#       hours to build.
-#
+# 指示应配置构建以调试 Rust。
 #debug = false
 
-# Whether to download the stage 1 and 2 compilers from CI.
-# This is mostly useful for tools; if you have changes to `compiler/` or `library/` they will be ignored.
-#
-# Set this to "if-unchanged" to only download if the compiler and standard library have not been modified.
-# Set this to `true` to download unconditionally (useful if e.g. you are only changing doc-comments).
+# 是否从 CI 下载第一阶段和第二阶段编译器。
 #download-rustc = false
 
-# Number of codegen units to use for each compiler invocation. A value of 0
-# means "the number of cores on this machine", and 1+ is passed through to the
-# compiler.
-#
-# Uses the rustc defaults: https://doc.rust-lang.org/rustc/codegen-options/index.html#codegen-units
+# 每次编译器调用使用的代码生成单元数
 #codegen-units = if incremental { 256 } else { 16 }
 
-# Sets the number of codegen units to build the standard library with,
-# regardless of what the codegen-unit setting for the rest of the compiler is.
-# NOTE: building with anything other than 1 is known to occasionally have bugs.
+# 设置用于构建标准库的代码生成单元的数量
 #codegen-units-std = codegen-units
 
-# Whether or not debug assertions are enabled for the compiler and standard library.
-# These can help find bugs at the cost of a small runtime slowdown.
-#
-# Defaults to rust.debug value
+# 是否为编译器和标准库启用调试断言。
 #debug-assertions = rust.debug (boolean)
 
-# Whether or not debug assertions are enabled for the standard library.
-# Overrides the `debug-assertions` option, if defined.
-#
-# Defaults to rust.debug-assertions value
+# 是否为标准库启用调试断言。
 #debug-assertions-std = rust.debug-assertions (boolean)
 
-# Whether or not to leave debug! and trace! calls in the rust binary.
-#
-# Defaults to rust.debug-assertions value
-#
-# If you see a message from `tracing` saying "some trace filter directives would enable traces that
-# are disabled statically" because `max_level_info` is enabled, set this value to `true`.
+# 是否离开debug！并追踪！调用 Rust 二进制文件。
 #debug-logging = rust.debug-assertions (boolean)
 
-# Whether or not overflow checks are enabled for the compiler and standard
-# library.
-#
-# Defaults to rust.debug value
+# 编译器和标准是否启用溢出检查
 #overflow-checks = rust.debug (boolean)
 
-# Whether or not overflow checks are enabled for the standard library.
-# Overrides the `overflow-checks` option, if defined.
-#
-# Defaults to rust.overflow-checks value
+# 是否为标准库启用溢出检查。
 #overflow-checks-std = rust.overflow-checks (boolean)
 
-# Debuginfo level for most of Rust code, corresponds to the `-C debuginfo=N` option of `rustc`.
-# `0` - no debug info
-# `1` - line tables only - sufficient to generate backtraces that include line
-#       information and inlined functions, set breakpoints at source code
-#       locations, and step through execution in a debugger.
-# `2` - full debug info with variable and type information
-# Can be overridden for specific subsets of Rust code (rustc, std or tools).
-# Debuginfo for tests run with compiletest is not controlled by this option
-# and needs to be enabled separately with `debuginfo-level-tests`.
-#
-# Note that debuginfo-level = 2 generates several gigabytes of debuginfo
-# and will slow down the linking process significantly.
+# 大多数 Rust 代码的 Debuginfo 级别对应于 `rustc` 的 `-C debuginfo=N` 选项。
+# `0` - 无调试信息
+# `1` - 仅行表 - 足以生成包含行的回溯信息和内联函数，在源代码处设置断点位置，并在调试器中单步执行
+# `2` - 包含变量和类型信息的完整调试信息
+# 可以针对 Rust 代码的特定子集（rustc、std 或工具）进行覆盖。
 #debuginfo-level = if rust.debug { 1 } else { 0 }
 
-# Debuginfo level for the compiler.
+# 编译器的调试信息级别。
 #debuginfo-level-rustc = rust.debuginfo-level
 
-# Debuginfo level for the standard library.
+# 标准库的调试信息级别。
 #debuginfo-level-std = rust.debuginfo-level
 
-# Debuginfo level for the tools.
+# 工具的调试信息级别。
 #debuginfo-level-tools = rust.debuginfo-level
 
-# Debuginfo level for the test suites run with compiletest.
-# FIXME(#61117): Some tests fail when this option is enabled.
+# 使用compiletest运行的测试套件的调试信息级别。
 #debuginfo-level-tests = 0
 
-# Should rustc be build with split debuginfo? Default is platform dependent.
-# Valid values are the same as those accepted by `-C split-debuginfo`
-# (`off`/`unpacked`/`packed`).
-#
-# On Linux, split debuginfo is disabled by default.
-#
-# On Apple platforms, unpacked split debuginfo is used by default. Unpacked
-# debuginfo does not run `dsymutil`, which packages debuginfo from disparate
-# object files into a single `.dSYM` file. `dsymutil` adds time to builds for
-# no clear benefit, and also makes it more difficult for debuggers to find
-# debug info. The compiler currently defaults to running `dsymutil` to preserve
-# its historical default, but when compiling the compiler itself, we skip it by
-# default since we know it's safe to do so in that case.
-#
-# On Windows platforms, packed debuginfo is the only supported option,
-# producing a `.pdb` file.
+# rustc 应该使用分割 debuginfo 来构建吗？默认值取决于平台。有效值与“-C split-debuginfo”接受的值相同(`off`/`unpacked`/`packed`).
 #split-debuginfo = if linux { off } else if windows { packed } else if apple { unpacked }
 
-# Whether or not `panic!`s generate backtraces (RUST_BACKTRACE)
+# `panic!` 是否生成回溯 (RUST_BACKTRACE)
 #backtrace = true
 
-# Whether to always use incremental compilation when building rustc
+# 构建 rustc 时是否始终使用增量编译
 #incremental = false
 
-# Build a multi-threaded rustc
-# FIXME(#75760): Some UI tests fail when this option is enabled.
-# NOTE: This option is NOT SUPPORTED. See #48685.
+# 构建多线程 rustc
 #parallel-compiler = false
 
-# The default linker that will be hard-coded into the generated
-# compiler for targets that don't specify a default linker explicitly
-# in their target specifications.  Note that this is not the linker
-# used to link said compiler. It can also be set per-target (via the
-# `[target.<triple>]` block), which may be useful in a cross-compilation
-# setting.
-#
-# See https://doc.rust-lang.org/rustc/codegen-options/index.html#linker for more information.
+# 将被硬编码到生成的默认链接器用于未显式指定默认链接器的目标的编译器请注意，这不是链接器用于链接所述编译器。
 #default-linker = <none> (path)
 
-# The "channel" for the Rust build to produce. The stable/beta channels only
-# allow using stable features, whereas the nightly and dev channels allow using
-# nightly features
+# Rust 构建生成的“通道”。
 #channel = "dev"
 
-# A descriptive string to be appended to `rustc --version` output, which is
-# also used in places like debuginfo `DW_AT_producer`. This may be useful for
-# supplementary build information, like distro-specific package versions.
-#
-# The Rust compiler will differentiate between versions of itself, including
-# based on this string, which means that if you wish to be compatible with
-# upstream Rust you need to set this to "". However, note that if you are not
-# actually compatible -- for example if you've backported patches that change
-# behavior -- this may lead to miscompilations or other bugs.
+# 要附加到“rustc --version”输出的描述性字符串，即也用于 debuginfo `DW_AT_ Producer` 等地方。
 #description = ""
 
-# The root location of the musl installation directory. The library directory
-# will also need to contain libunwind.a for an unwinding implementation. Note
-# that this option only makes sense for musl targets that produce statically
-# linked binaries.
-#
-# Defaults to /usr on musl hosts. Has no default otherwise.
+# musl 安装目录的根位置。图书馆目录还需要包含 libunwind.a 以进行展开实现
 #musl-root = <platform specific> (path)
 
-# By default the `rustc` executable is built with `-Wl,-rpath` flags on Unix
-# platforms to ensure that the compiler is usable by default from the build
-# directory (as it links to a number of dynamic libraries). This may not be
-# desired in distributions, for example.
+# 默认情况下，“rustc”可执行文件是在 Unix 上使用“-Wl,-rpath”标志构建的平台
 #rpath = true
 
-# Prints each test name as it is executed, to help debug issues in the test harness itself.
+# 在执行时打印每个测试名称，以帮助调试测试工具本身中的问题。
 #verbose-tests = false
 
-# Flag indicating whether tests are compiled with optimizations (the -O flag).
+# 测试是否通过优化进行编译的标志（-O 标志）。
 #optimize-tests = true
 
-# Flag indicating whether codegen tests will be run or not. If you get an error
-# saying that the FileCheck executable is missing, you may want to disable this.
-# Also see the target's llvm-filecheck option.
+# 是否运行 codegen 测试的标志。
 #codegen-tests = true
 
-# Flag indicating whether git info will be retrieved from .git automatically.
-# Having the git information can cause a lot of rebuilds during development.
-#
-# FIXME(#76720): this can causes bugs if different compilers reuse the same metadata cache.
+# 是否自动从 .git 检索 git 信息的标志。
 #omit-git-hash = if rust.channel == "dev" { true } else { false }
 
-# Whether to create a source tarball by default when running `x dist`.
-#
-# You can still build a source tarball when this is disabled by explicitly passing `x dist rustc-src`.
+# 运行“x dist”时是否默认创建源 tarball。
 #dist-src = true
 
-# After building or testing an optional component (e.g. the nomicon or reference), append the
-# result (broken, compiling, testing) into this JSON file.
+# 构建或测试可选组件
 #save-toolstates = <none> (path)
 
-# This is an array of the codegen backends that will be compiled for the rustc
-# that's being compiled. The default is to only build the LLVM codegen backend,
-# and currently the only standard options supported are `"llvm"`, `"cranelift"`
-# and `"gcc"`. The first backend in this list will be used as default by rustc
-# when no explicit backend is specified.
+# 这是将为 rustc 编译的 codegen 后端数组正在编译。
 #codegen-backends = ["llvm"]
 
-# Indicates whether LLD will be compiled and made available in the sysroot for
-# rustc to execute.
-#lld = false
+# 是否将编译 LLD 并使其在 sysroot 中可用
+lld = true
 
-# Indicates whether LLD will be used to link Rust crates during bootstrap on
-# supported platforms. The LLD from the bootstrap distribution will be used
-# and not the LLD compiled during the bootstrap.
-#
-# LLD will not be used if we're cross linking.
-#
-# Explicitly setting the linker for a target will override this option when targeting MSVC.
+# LLD 是否将用于在引导期间链接 Rust 包支持的平台
 #use-lld = false
 
-# Indicates whether some LLVM tools, like llvm-objdump, will be made available in the
-# sysroot.
+# 某些 LLVM 工具（例如 llvm-objdump）是否将在系统根目录。
 #llvm-tools = false
 
-# Whether to deny warnings in crates
+# 是否拒绝板条箱中的警告
 #deny-warnings = true
 
-# Print backtrace on internal compiler errors during bootstrap
+# 在引导期间打印内部编译器错误的回溯
 #backtrace-on-ice = false
 
-# Whether to verify generated LLVM IR
+# 是否验证生成的LLVM IR
 #verify-llvm-ir = false
 
-# Compile the compiler with a non-default ThinLTO import limit. This import
-# limit controls the maximum size of functions imported by ThinLTO. Decreasing
-# will make code compile faster at the expense of lower runtime performance.
+# 使用非默认 ThinLTO 导入限制来编译编译器
 #thin-lto-import-instr-limit = if incremental { 10 } else { LLVM default (currently 100) }
 
-# Map debuginfo paths to `/rust/$sha/...`.
-# Useful for reproducible builds. Generally only set for releases
+# 将 debuginfo 路径映射到 `/rust/$sha/...`。
 #remap-debuginfo = false
 
-# Link the compiler and LLVM against `jemalloc` instead of the default libc allocator.
-# This option is only tested on Linux and OSX.
+# 将编译器和 LLVM 链接到“jemalloc”而不是默认的 libc 分配器。
 #jemalloc = false
 
-# Run tests in various test suites with the "nll compare mode" in addition to
-# running the tests in normal mode. Largely only used on CI and during local
-# development of NLL
+# 除了以下之外，还使用“nll 比较模式”在各种测试套件中运行测试在正常模式下运行测试。
 #test-compare-mode = false
 
-# Global default for llvm-libunwind for all targets. See the target-specific
-# documentation for llvm-libunwind below. Note that the target-specific
-# option will override this if set.
+# 所有目标的 llvm-libunwind 的全局默认值。
 #llvm-libunwind = 'no'
 
-# Enable Windows Control Flow Guard checks in the standard library.
-# This only applies from stage 1 onwards, and only for Windows targets.
+# 在标准库中启用 Windows Control Flow Guard 检查。
 #control-flow-guard = false
 
-# Enable symbol-mangling-version v0. This can be helpful when profiling rustc,
-# as generics will be preserved in symbols (rather than erased into opaque T).
-# When no setting is given, the new scheme will be used when compiling the
-# compiler and its tools and the legacy scheme will be used when compiling the
-# standard library.
-# If an explicit setting is given, it will be used for all parts of the codebase.
+# 启用符号修改版本 v0。
 #new-symbol-mangling = true|false (see comment)
 
-# Select LTO mode that will be used for compiling rustc. By default, thin local LTO
-# (LTO within a single crate) is used (like for any Rust crate). You can also select
-# "thin" or "fat" to apply Thin/Fat LTO to the `rustc_driver` dylib, or "off" to disable
-# LTO entirely.
+# 选择将用于编译 rustc 的 LTO 模式 “thin”或“fat”
 #lto = "thin-local"
 
-# Build compiler with the optimization enabled and -Zvalidate-mir, currently only for `std`
+# 构建启用优化和 -Zvalidate-mir 的编译器，目前仅适用于“std”
 #validate-mir-opts = 3
 
 # =============================================================================
-# Options for specific targets
+# 针对特定目标的选项
 #
-# Each of the following options is scoped to the specific target triple in
-# question and is used for determining how to compile each target.
+# 以下每个选项的范围仅限于中的特定目标三元组
+# 问题并用于确定如何编译每个目标.
 # =============================================================================
-[target.x86_64-unknown-linux-gnu]
-[target.mipsel-unknown-linux-uclibc]
-cc = "mipsel-openwrt-linux-uclibc-gcc"
-cxx = "mipsel-openwrt-linux-uclibc-c++"
-ar = "mipsel-openwrt-linux-uclibc-ar"
-linker = "mipsel-openwrt-linux-uclibc-gcc"
-# C compiler to be used to compile C code. Note that the
-# default value is platform specific, and if not specified it may also depend on
-# what platform is crossing to what platform.
-# See `src/bootstrap/cc_detect.rs` for details.
-#cc = "cc" (path)
+#[target.x86_64-unknown-linux-gnu]
+[target.mips-unknown-linux-uclibc]
+# C编译器用于编译C代码。
+cc = "/opt/buildroot/bin/mipsel-linux-gcc"
 
-# C++ compiler to be used to compile C++ code (e.g. LLVM and our LLVM shims).
-# This is only used for host targets.
-# See `src/bootstrap/cc_detect.rs` for details.
-#cxx = "c++" (path)
+# C++ 编译器用于编译 C++ 代码
+cxx = "/opt/buildroot/bin/mipsel-linux-g++"
 
-# Archiver to be used to assemble static libraries compiled from C/C++ code.
-# Note: an absolute path should be used, otherwise LLVM build will break.
-#ar = "ar" (path)
+# Archiver 用于组装从 C/C++ 代码编译的静态库。应使用绝对路径，否则 LLVM 构建将中断。
+ar = "/opt/buildroot/bin/mipsel-linux-ar"
 
-# Ranlib to be used to assemble static libraries compiled from C/C++ code.
-# Note: an absolute path should be used, otherwise LLVM build will break.
-#ranlib = "ranlib" (path)
+# Ranlib 用于组装从 C/C++ 代码编译的静态库。应使用绝对路径，否则 LLVM 构建将中断。
+ranlib = "/opt/buildroot/bin/mipsel-linux-ranlib"
 
-# Linker to be used to bootstrap Rust code. Note that the
-# default value is platform specific, and if not specified it may also depend on
-# what platform is crossing to what platform.
-# Setting this will override the `use-lld` option for Rust code when targeting MSVC.
-#linker = "cc" (path)
+# 用于引导 Rust 代码的链接器
+linker = "/opt/buildroot/bin/mipsel-linux-gcc"
 
-# Path to the `llvm-config` binary of the installation of a custom LLVM to link
-# against. Note that if this is specified we don't compile LLVM at all for this
-# target.
+# 要链接的自定义 LLVM 安装的“llvm-config”二进制文件的路径
 #llvm-config = <none> (path)
 
-# Override detection of whether this is a Rust-patched LLVM. This would be used
-# in conjunction with either an llvm-config or build.submodules = false.
+# 覆盖对这是否是 Rust 补丁 LLVM 的检测。这将被使用与 llvm-config 或 build.submodules = false 结合使用。
 #llvm-has-rust-patches = if llvm-config { false } else { true }
 
-# Normally the build system can find LLVM's FileCheck utility, but if
-# not, you can specify an explicit file name for it.
+# 通常构建系统可以找到 LLVM 的 FileCheck 实用程序
 #llvm-filecheck = "/path/to/llvm-version/bin/FileCheck"
 
-# Use LLVM libunwind as the implementation for Rust's unwinder.
-# Accepted values are 'in-tree' (formerly true), 'system' or 'no' (formerly false).
-# This option only applies for Linux and Fuchsia targets.
-# On Linux target, if crt-static is not enabled, 'no' means dynamic link to
-# `libgcc_s.so`, 'in-tree' means static link to the in-tree build of llvm libunwind
-# and 'system' means dynamic link to `libunwind.so`. If crt-static is enabled,
-# the behavior is depend on the libc. On musl target, 'no' and 'in-tree' both
-# means static link to the in-tree build of llvm libunwind, and 'system' means
-# static link to `libunwind.a` provided by system. Due to the limitation of glibc,
-# it must link to `libgcc_eh.a` to get a working output, and this option have no effect.
+# 使用 LLVM libunwind 作为 Rust 展开器的实现。接受的值为“in-tree”（以前为 true）、“system”或“no”（以前为 false）
 #llvm-libunwind = 'no' if Linux, 'in-tree' if Fuchsia
 
-# If this target is for Android, this option will be required to specify where
-# the NDK for the target lives. This is used to find the C compiler to link and
-# build native code.
-# See `src/bootstrap/cc_detect.rs` for details.
+# 如果此目标适用于 Android，则需要此选项来指定位置
 #android-ndk = <none> (path)
 
-# Build the sanitizer runtimes for this target.
-# This option will override the same option under [build] section.
+# 为此目标构建sanitizers运行时。
 #sanitizers = build.sanitizers (bool)
 
-# When true, build the profiler runtime for this target (required when compiling
-# with options that depend on this runtime, such as `-C profile-generate` or
-# `-C instrument-coverage`). This may also be given a path to an existing build
-# of the profiling runtime library from LLVM's compiler-rt.
-# This option will override the same option under [build] section.
+# 如果为 true，则为此目标构建探查器运行时（编译时需要）具有依赖于该运行时的选项，例如“-C profile-generate”或`-C 仪器覆盖范围`)。这也可能被赋予现有构建的路径来自 LLVM 编译器-rt 的分析运行时库。
 #profiler = build.profiler (bool)
 
-# This option supports enable `rpath` in each target independently,
-# and will override the same option under [rust] section. It only works on Unix platforms
+# 该选项支持在每个目标中独立启用“rpath”
 #rpath = rust.rpath (bool)
 
-# Force static or dynamic linkage of the standard library for this target. If
-# this target is a host for rustc, this will also affect the linkage of the
-# compiler itself. This is useful for building rustc on targets that normally
-# only use static libraries. If unset, the target's default linkage is used.
+# 强制此目标的标准库的静态或动态链接。
 #crt-static = <platform-specific> (bool)
 
-# The root location of the musl installation directory. The library directory
-# will also need to contain libunwind.a for an unwinding implementation. Note
-# that this option only makes sense for musl targets that produce statically
-# linked binaries.
+# musl 安装目录的根位置。
 #musl-root = build.musl-root (path)
 
-# The full path to the musl libdir.
+# musl libdir 的完整路径。
 #musl-libdir = musl-root/lib
 
-# The root location of the `wasm32-wasi` sysroot. Only used for the
-# `wasm32-wasi` target. If you are building wasm32-wasi target, make sure to
-# create a `[target.wasm32-wasi]` section and move this field there.
+# “wasm32-wasi” sysroot 的根位置。
 #wasi-root = <none> (path)
 
-# Used in testing for configuring where the QEMU images are located, you
-# probably don't want to use this.
+# 用于测试配置 QEMU 映像所在的位
 #qemu-rootfs = <none> (path)
 
-# Skip building the `std` library for this target. Enabled by default for
-# target triples containing `-none`, `nvptx`, `switch`, or `-uefi`.
+# 跳过为此目标构建“std”库。默认启用,包含“-none”、“nvptx”、“switch”或“-uefi”的目标三元组。
 #no-std = <platform-specific> (bool)
 
 # =============================================================================
-# Distribution options
+# 分销选项
 #
-# These options are related to distribution, mostly for the Rust project itself.
-# You probably won't need to concern yourself with any of these options
+# 这些选项与分发相关，主要针对 Rust 项目本身。
+# 您可能不需要关心这些选项中的任何一个
 # =============================================================================
 [dist]
 
-# This is the folder of artifacts that the build system will sign. All files in
-# this directory will be signed with the default gpg key using the system `gpg`
-# binary. The `asc` and `sha256` files will all be output into the standard dist
-# output folder (currently `build/dist`)
-#
-# This folder should be populated ahead of time before the build system is
-# invoked.
+# 这是构建系统将签名的工件的文件夹。
 #sign-folder = <none> (path)
 
-# The remote address that all artifacts will eventually be uploaded to. The
-# build system generates manifests which will point to these urls, and for the
-# manifests to be correct they'll have to have the right URLs encoded.
-#
-# Note that this address should not contain a trailing slash as file names will
-# be appended to it.
+# 所有工件最终将上传到的远程地址。
 #upload-addr = <none> (URL)
 
-# Whether to build a plain source tarball to upload
-# We disable that on Windows not to override the one already uploaded on S3
-# as the one built on Windows will contain backslashes in paths causing problems
-# on linux
+# 是否构建纯源 tarball 来上传
 #src-tarball = true
 
-# Whether to allow failures when building tools
+# 构建工具时是否允许失败
 #missing-tools = false
 
-# List of compression formats to use when generating dist tarballs. The list of
-# formats is provided to rust-installer, which must support all of them.
-#
-# This list must be non-empty.
+# 生成 dist tarball 时使用的压缩格式列表
 #compression-formats = ["gz", "xz"]
 
-# How much time should be spent compressing the tarballs. The better the
-# compression profile, the longer compression will take.
+# 压缩 tarball 需要花费多少时间。越好
+#压缩配置文件，压缩所需的时间越长。
 #
-# Available options: fast, balanced, best
+#可用选项：快速fast、平衡balanced、最佳best
 #compression-profile = "fast"
 
-# Copy the linker, DLLs, and various libraries from MinGW into the rustc toolchain.
-# Only applies when the host or target is pc-windows-gnu.
+# 将 MinGW 中的链接器、DLL 和各种库复制到 rustc 工具链中。
 #include-mingw-linker = true
