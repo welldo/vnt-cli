@@ -10,7 +10,7 @@ changelog-seen = 2
 #download-ci-llvm = if rust.channel == "dev" { "if-available" } else { false }
 
 # LLVM 构建是发布还是调试构建
-optimize = true
+#optimize = true
 
 # LLVM 是否应使用 ThinLTO 构建。
 #thin-lto = false
