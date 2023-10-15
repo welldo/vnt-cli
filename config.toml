@@ -93,7 +93,7 @@ ninja = true
 #doc-stage = 0
 
 # 用于“build”子命令的默认阶段
-#build-stage = 1
+build-stage = 2
 
 # 用于“test”子命令的默认阶段
 #test-stage = 1
