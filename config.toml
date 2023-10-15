@@ -25,7 +25,7 @@ optimize = true
 #tests = false
 
 # LLVM插件是否启用
-plugins = true
+#plugins = true
 
 # 指示构建LLVM时是否使用ccache。设置为“true”以使用第一个“ccache”
 #ccache = false
