@@ -109,7 +109,7 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
-          git clone https://github.com/lbl8603/vnt -b ${{ needs.check.outputs.ver }} /opt/vnt
+          git clone https://github.com/lbl8603/vnt /opt/vnt
           cd /opt/vnt
           echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
