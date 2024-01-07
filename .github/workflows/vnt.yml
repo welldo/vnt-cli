@@ -108,7 +108,7 @@ jobs:
             if [[ $DDWRT == ddwrt-arm_cortex-a9 ]] ; then
               wget -q -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/ddwrt-arm_cortex-a9_gcc-13.1.0_musl_eabi.tar.gz -P /opt/musl_gcc/
               tar zxf /opt/musl_gcc/ddwrt-arm_cortex-a9_gcc-13.1.0_musl_eabi.tar.gz -C /opt/musl_gcc/
-              export PATH=$PATH:/opt/musl_gcc/toolchain-arm_cortex-a9_gcc-13.1.0_musl_eabi/bin
+              sudo ln -s /opt/musl_gcc/toolchain-arm_cortex-a9_gcc-13.1.0_musl_eabi/bin/*gcc  /usr/bin/
               cat >>~/.cargo/config <<EOF
               [target.arm-unknown-linux-musleabi]
               linker = "arm-openwrt-linux-muslgnueabi-gcc"
