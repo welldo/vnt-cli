@@ -6,7 +6,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
-  
+  tag: 1.2.8.3
 jobs:
  build:
     strategy:
@@ -115,7 +115,7 @@ jobs:
         run: |
           git clone https://github.com/lbl8603/vnt /opt/vnt
           cd /opt/vnt
-          echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
+          #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
       - name: 打包压缩
         run: |
