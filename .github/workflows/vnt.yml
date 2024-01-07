@@ -116,8 +116,8 @@ jobs:
               EOF
             else
             if [[ $TARGET == mips-unknown-linux-musl ]] || [[ $TARGET == mipsel-unknown-linux-musl ]] ; then
-            #rustup install 1.72.1
-            #rustup default 1.72.1
+            rustup install 1.72.1
+            rustup default 1.72.1
             fi
             cat >>~/.cargo/config <<EOF
             [target.aarch64-unknown-linux-musl]
@@ -143,6 +143,7 @@ jobs:
             rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]  
             EOF
             fi
+            cat ~/.cargo/config
       - name: 添加编译平台
         run: rustup target add $TARGET
       - name: 开始编译
