@@ -58,6 +58,11 @@ jobs:
             OS: ubuntu-latest
             FEATURES: openssl-vendored
             STRIP: mips-linux-musl-strip
+          - TARGET: arm-unknown-linux-musleabi   #ddwrt
+            OS: ubuntu-latest
+            FEATURES: ring-cipher,openssl-vendored
+            STRIP: arm-openwrt-linux-muslgnueabi-strip
+            DDWRT: ddwrt-arm_cortex-a9
     runs-on: ${{ matrix.OS }}
     env:
       NAME: vnt-cli_${{ matrix.TARGET }}
@@ -65,6 +70,7 @@ jobs:
       OS: ${{ matrix.OS }}
       STRIP: ${{ matrix.STRIP }}
       FEATURES: ${{ matrix.FEATURES }}
+      DDWRT: vnt-cli_${{ matrix.DDWRT }}
     steps:
       - uses: actions/checkout@v2
       - name: Init submodules
@@ -99,6 +105,16 @@ jobs:
               wget -c https://musl.cc/$MUSL_URI.tgz -P /opt/musl_gcc/
               tar zxf /opt/musl_gcc/$MUSL_URI.tgz -C /opt/musl_gcc/
               sudo ln -s /opt/musl_gcc/$MUSL_URI/bin/*gcc /usr/bin/
+            if [[ $DDWRT == ddwrt-arm_cortex-a9 ]] ; then
+              wget -q -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/ddwrt-arm_cortex-a9_gcc-13.1.0_musl_eabi.tar.gz -P /opt/musl_gcc/
+              tar zxf /opt/musl_gcc/ddwrt-arm_cortex-a9_gcc-13.1.0_musl_eabi.tar.gz -C /opt/musl_gcc/
+              export PATH=$PATH:/opt/musl_gcc/toolchain-arm_cortex-a9_gcc-13.1.0_musl_eabi/bin
+              cat >>~/.cargo/config <<EOF
+              [target.arm-unknown-linux-musleabi]
+              linker = "arm-openwrt-linux-muslgnueabi-gcc"
+              rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
+              EOF
+            else
             if [[ $TARGET == mips-unknown-linux-musl ]] || [[ $TARGET == mipsel-unknown-linux-musl ]] ; then
             rustup install 1.72.1
             rustup default 1.72.1
@@ -126,6 +142,7 @@ jobs:
             linker = "mips-linux-musl-gcc"
             rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]  
             EOF
+            fi
       - name: 添加编译平台
         run: rustup target add $TARGET
       - name: 开始编译
@@ -142,6 +159,12 @@ jobs:
           tar -xvf /opt/st/upx-4.1.0-amd64_linux.tar.xz -C /opt
           chmod 777 /opt/upx-4.1.0-amd64_linux/upx
           chmod 777 /opt/musl_gcc/${{ env.MUSL_URI }}/bin/${STRIP}
+          if [[ $DDWRT == ddwrt-arm_cortex-a9 ]] ; then
+          mv /opt/vnt/target/${TARGET}/release/vnt-cli /opt/upx/${DDWRT}
+          cd /opt/upx
+          ${STRIP} ${DDWRT}
+          /opt/upx-4.1.0-amd64_linux/upx --lzma --best ${DDWRT}
+          else
           mv /opt/vnt/target/${TARGET}/release/vnt-cli /opt/upx/${NAME}
           cd /opt/upx
           /opt/musl_gcc/${{ env.MUSL_URI }}/bin/${STRIP} ${NAME}
@@ -149,6 +172,7 @@ jobs:
           /opt/upx-3.95-amd64_linux/upx --lzma --best ${NAME}
           else
           /opt/upx-4.1.0-amd64_linux/upx --lzma --best ${NAME}
+          fi
           fi
           echo "build_time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - name: 发布
