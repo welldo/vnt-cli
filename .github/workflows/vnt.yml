@@ -143,7 +143,6 @@ jobs:
             rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]  
             EOF
             fi
-            cat ~/.cargo/config
       - name: 添加编译平台
         run: rustup target add $TARGET
       - name: 开始编译
