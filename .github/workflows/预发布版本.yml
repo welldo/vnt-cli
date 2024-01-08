@@ -6,7 +6,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
-  tag: 1.2.8.3
+  tag: 1.2.8.2
 jobs:
  build:
     strategy:
@@ -113,7 +113,10 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
-          git clone https://github.com/lbl8603/vnt /opt/vnt
+          git clone https://github.com/lbl8603/vnt /opt/vnt0
+          git clone https://github.com/lbl8603/vnt -b 1.2.8.2 /opt/vnt
+          cp -rf /opt/vnt0/vnt-cli/Cargo.toml /opt/vnt/vnt-cli/Cargo.toml
+          cp -rf /opt/vnt0/vnt-cli/src/main.rs /opt/vnt/vnt-cli/src/main.rs
           cd /opt/vnt
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
@@ -160,15 +163,12 @@ jobs:
           body: |
            > ### 编译时间 ：${{ env.build_time }}
            
-           这是预发布版本，各平台的压缩版程序
-           
            -musleabi：只支持软件浮点的设备
            -musleabihf：支持硬件浮点的设备
            
            [官方更新说明](https://github.com/lbl8603/vnt/releases)
            
-          tag_name: ${{ env.tag }}
-          prerelease: true
+          tag_name: 1.2.8.2
           files: |
               /opt/upx/*
       - 
