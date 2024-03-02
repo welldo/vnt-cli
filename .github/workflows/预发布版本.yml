@@ -26,6 +26,7 @@ jobs:
             OS: ubuntu-latest
             FEATURES: openssl-vendored
             STRIP: armv7l-linux-musleabihf-strip
+            UPX: _upx
           - TARGET: armv7-unknown-linux-musleabi
             OS: ubuntu-latest
             FEATURES: openssl-vendored
@@ -39,6 +40,7 @@ jobs:
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
             STRIP: arm-linux-musleabihf-strip
+            UPX: _upx
           - TARGET: arm-unknown-linux-musleabi
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
