@@ -6,7 +6,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
-  tag: 1.2.8.3
+  tag: 1.2.9
 jobs:
  build:
     strategy:
@@ -114,15 +114,15 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
-          git clone https://github.com/lbl8603/vnt /opt/vnt
+          git clone https://github.com/lbl8603/vnt -b mio /opt/vnt
           cd /opt/vnt
-          if [[ $TARGET == aarch64-unknown-linux-musl ]] || [[ $TARGET == armv7-unknown-linux-musleabi ]] || [[ $TARGET == arm-unknown-linux-musleabi ]] ; then
-          sed -i '/let path = std::env::current_exe()/d' ./vnt-cli/src/main.rs
-          sed -i '/.expect("current_exe error")/d' ./vnt-cli/src/main.rs
-          sed -i '/.parent()/d' ./vnt-cli/src/main.rs
-          sed -i '/.expect("current_exe parent error")/d' ./vnt-cli/src/main.rs
-          sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
-          fi
+          #if [[ $TARGET == aarch64-unknown-linux-musl ]] || [[ $TARGET == armv7-unknown-linux-musleabi ]] || [[ $TARGET == arm-unknown-linux-musleabi ]] ; then
+          #sed -i '/let path = std::env::current_exe()/d' ./vnt-cli/src/main.rs
+          #sed -i '/.expect("current_exe error")/d' ./vnt-cli/src/main.rs
+          #sed -i '/.parent()/d' ./vnt-cli/src/main.rs
+          #sed -i '/.expect("current_exe parent error")/d' ./vnt-cli/src/main.rs
+          #sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
+          #fi
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
       - name: 打包压缩
