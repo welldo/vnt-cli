@@ -163,7 +163,7 @@ jobs:
           else
           /opt/upx-4.1.0-amd64_linux/upx --lzma --best ${NAME}
           fi
-          if [[ $TARGET == arm-unknown-linux-musleabi ]]; then
+          if [[ $TARGET == arm-unknown-linux-musleabi && "${{ matrix.UPX }}" = "_upx" ]]; then
           cd /opt/vnt
           cargo clean
           wget -q -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/ddwrt-arm_cortex-a9_gcc-13.1.0_musl_eabi.tar.gz -P /opt/musl_gcc/
