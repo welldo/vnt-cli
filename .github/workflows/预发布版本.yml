@@ -134,7 +134,7 @@ jobs:
         run: |
           git clone https://github.com/lbl8603/vnt -b mio /opt/vnt
           cd /opt/vnt
-          if (( $TARGET == "aarch64-unknown-linux-musl" || $TARGET == "armv7-unknown-linux-musleabi" || $TARGET == "arm-unknown-linux-musleabi" )) && [[ "${{ matrix.UPX }}" != "_upx" ]]; then
+          if [[ ( $TARGET == "aarch64-unknown-linux-musl" || $TARGET == "armv7-unknown-linux-musleabi" || $TARGET == "arm-unknown-linux-musleabi" ) && "${{ matrix.UPX }}" != "_upx" ]]; then
           sed -i '/let path = std::env::current_exe()?/d' ./vnt-cli/src/main.rs
           sed -i '/.parent()/d' ./vnt-cli/src/main.rs
           sed -i '/.ok_or(io::Error::new(/d' ./vnt-cli/src/main.rs
