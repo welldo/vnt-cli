@@ -131,12 +131,13 @@ jobs:
         run: |
           git clone https://github.com/lbl8603/vnt -b mio /opt/vnt
           cd /opt/vnt
-          if if [[ ($TARGET == "aarch64-unknown-linux-musl" || $TARGET == "armv7-unknown-linux-musleabi" || $TARGET == "arm-unknown-linux-musleabi") && $UPX != "_upx" ]] ; then
+          if [[ ($TARGET == "aarch64-unknown-linux-musl" || $TARGET == "armv7-unknown-linux-musleabi" || $TARGET == "arm-unknown-linux-musleabi") && $UPX != "_upx" ]] ; then
           sed -i '/let path = std::env::current_exe()?/d' ./vnt-cli/src/main.rs
           #sed -i '/.expect("current_exe error")/d' ./vnt-cli/src/main.rs
           sed -i '/.parent().ok_or(io::Error::new(io::ErrorKind::Other,"current_exe parent error"))?/d' ./vnt-cli/src/main.rs
           #sed -i '/.expect("current_exe parent error")/d' ./vnt-cli/src/main.rs
           sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
+          cat ./vnt-cli/src/main.rs
           fi
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
