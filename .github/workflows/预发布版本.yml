@@ -17,6 +17,11 @@ jobs:
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
             STRIP: aarch64-linux-musl-strip
+            UPX: _upx
+          - TARGET: aarch64-unknown-linux-musl
+            OS: ubuntu-latest
+            FEATURES: ring-cipher,openssl-vendored
+            STRIP: aarch64-linux-musl-strip
           - TARGET: armv7-unknown-linux-musleabihf
             OS: ubuntu-latest
             FEATURES: openssl-vendored
@@ -25,10 +30,20 @@ jobs:
             OS: ubuntu-latest
             FEATURES: openssl-vendored
             STRIP: armv7m-linux-musleabi-strip
+            UPX: _upx
+          - TARGET: armv7-unknown-linux-musleabi
+            OS: ubuntu-latest
+            FEATURES: openssl-vendored
+            STRIP: armv7m-linux-musleabi-strip
           - TARGET: arm-unknown-linux-musleabihf
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
             STRIP: arm-linux-musleabihf-strip
+          - TARGET: arm-unknown-linux-musleabi
+            OS: ubuntu-latest
+            FEATURES: ring-cipher,openssl-vendored
+            STRIP: arm-linux-musleabi-strip
+            UPX: _upx
           - TARGET: arm-unknown-linux-musleabi
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
@@ -43,7 +58,7 @@ jobs:
             STRIP: mips-linux-musl-strip
     runs-on: ${{ matrix.OS }}
     env:
-      NAME: vnt-cli_${{ matrix.TARGET }}
+      NAME: vnt-cli_${{ matrix.TARGET }}${{ matrix.UPX }}
       TARGET: ${{ matrix.TARGET }}
       OS: ${{ matrix.OS }}
       STRIP: ${{ matrix.STRIP }}
@@ -116,13 +131,13 @@ jobs:
         run: |
           git clone https://github.com/lbl8603/vnt -b mio /opt/vnt
           cd /opt/vnt
-          #if [[ $UPX == _upx ]] ; then
-          #sed -i '/let path = std::env::current_exe()/d' ./vnt-cli/src/main.rs
-          #sed -i '/.expect("current_exe error")/d' ./vnt-cli/src/main.rs
-          #sed -i '/.parent()/d' ./vnt-cli/src/main.rs
-          #sed -i '/.expect("current_exe parent error")/d' ./vnt-cli/src/main.rs
-          #sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
-          #fi
+          if [[ $UPX == _upx ]] ; then
+          sed -i '/let path = std::env::current_exe()/d' ./vnt-cli/src/main.rs
+          sed -i '/.expect("current_exe error")/d' ./vnt-cli/src/main.rs
+          sed -i '/.parent()/d' ./vnt-cli/src/main.rs
+          sed -i '/.expect("current_exe parent error")/d' ./vnt-cli/src/main.rs
+          sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
+          fi
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
       - name: 打包压缩
@@ -172,6 +187,14 @@ jobs:
            
            -musleabi：只支持软件浮点的设备
            -musleabihf：支持硬件浮点的设备
+
+           其中aarch64 和musleabi的arm armv7 三个架构带upx后缀的为原版
+           不带upx后缀的为梅林版二进制程序，梅林的修改了路径为/tmp 不能多开了
+           以下是修改过路径的梅林版,路径为/tmp 不能多开了
+           vnt-cli_arm-unknown-linux-musleabi 
+           vnt-cli_armv7-unknown-linux-musleabi 
+           vnt-cli_aarch64-unknown-linux-musl
+           
 
            [官方更新说明](https://github.com/lbl8603/vnt/releases)
            
