@@ -17,21 +17,10 @@ jobs:
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
             STRIP: aarch64-linux-musl-strip
-            UPX: _upx
-          - TARGET: aarch64-unknown-linux-musl
-            OS: ubuntu-latest
-            FEATURES: ring-cipher,openssl-vendored
-            STRIP: aarch64-linux-musl-strip
           - TARGET: armv7-unknown-linux-musleabihf
             OS: ubuntu-latest
             FEATURES: openssl-vendored
             STRIP: armv7l-linux-musleabihf-strip
-            UPX: _upx
-          - TARGET: armv7-unknown-linux-musleabi
-            OS: ubuntu-latest
-            FEATURES: openssl-vendored
-            STRIP: armv7m-linux-musleabi-strip
-            UPX: _upx
           - TARGET: armv7-unknown-linux-musleabi
             OS: ubuntu-latest
             FEATURES: openssl-vendored
@@ -40,12 +29,6 @@ jobs:
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
             STRIP: arm-linux-musleabihf-strip
-            UPX: _upx
-          - TARGET: arm-unknown-linux-musleabi
-            OS: ubuntu-latest
-            FEATURES: ring-cipher,openssl-vendored
-            STRIP: arm-linux-musleabi-strip
-            UPX: _upx
           - TARGET: arm-unknown-linux-musleabi
             OS: ubuntu-latest
             FEATURES: ring-cipher,openssl-vendored
@@ -60,11 +43,10 @@ jobs:
             STRIP: mips-linux-musl-strip
     runs-on: ${{ matrix.OS }}
     env:
-      NAME: vnt-cli_${{ matrix.TARGET }}${{ matrix.UPX }}
+      NAME: vnt-cli_${{ matrix.TARGET }}
       TARGET: ${{ matrix.TARGET }}
       OS: ${{ matrix.OS }}
       STRIP: ${{ matrix.STRIP }}
-      #UPX: ${{ matrix.UPX }}
       FEATURES: ${{ matrix.FEATURES }}
     steps:
       - uses: actions/checkout@v2
@@ -134,16 +116,13 @@ jobs:
         run: |
           git clone https://github.com/lbl8603/vnt -b mio /opt/vnt
           cd /opt/vnt
-          if [[ ( $TARGET == "aarch64-unknown-linux-musl" || $TARGET == "armv7-unknown-linux-musleabi" || $TARGET == "arm-unknown-linux-musleabi" ) && "${{ matrix.UPX }}" != "_upx" ]]; then
-          sed -i '/let path = std::env::current_exe()?/d' ./vnt-cli/src/main.rs
-          sed -i '/.parent()/d' ./vnt-cli/src/main.rs
-          sed -i '/.ok_or(io::Error::new(/d' ./vnt-cli/src/main.rs
-          sed -i '/io::ErrorKind::Other,/d' ./vnt-cli/src/main.rs
-          sed -i '/"current_exe parent error",/d' ./vnt-cli/src/main.rs
-          sed -i '/))?/d' ./vnt-cli/src/main.rs
-          sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
-          cat ./vnt-cli/src/main.rs
-          fi
+          #if [[ $TARGET == aarch64-unknown-linux-musl ]] || [[ $TARGET == armv7-unknown-linux-musleabi ]] || [[ $TARGET == arm-unknown-linux-musleabi ]] ; then
+          #sed -i '/let path = std::env::current_exe()/d' ./vnt-cli/src/main.rs
+          #sed -i '/.expect("current_exe error")/d' ./vnt-cli/src/main.rs
+          #sed -i '/.parent()/d' ./vnt-cli/src/main.rs
+          #sed -i '/.expect("current_exe parent error")/d' ./vnt-cli/src/main.rs
+          #sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
+          #fi
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
       - name: 打包压缩
@@ -163,7 +142,7 @@ jobs:
           else
           /opt/upx-4.1.0-amd64_linux/upx --lzma --best ${NAME}
           fi
-          if [[ $TARGET == arm-unknown-linux-musleabi && "${{ matrix.UPX }}" = "_upx" ]]; then
+          if [[ $TARGET == arm-unknown-linux-musleabi ]]; then
           cd /opt/vnt
           cargo clean
           wget -q -c https://github.com/lmq8267/vnt-cli/releases/download/Armada370-ToolChain/ddwrt-arm_cortex-a9_gcc-13.1.0_musl_eabi.tar.gz -P /opt/musl_gcc/
@@ -193,15 +172,7 @@ jobs:
            
            -musleabi：只支持软件浮点的设备
            -musleabihf：支持硬件浮点的设备
-
-           其中aarch64 和musleabi的arm armv7 三个架构带upx后缀的为原版
-           不带upx后缀的为梅林版二进制程序，梅林的修改了路径为/tmp 不能多开了
-           以下是修改过路径的梅林版,路径为/tmp 不能多开了
-           vnt-cli_arm-unknown-linux-musleabi 
-           vnt-cli_armv7-unknown-linux-musleabi 
-           vnt-cli_aarch64-unknown-linux-musl
            
-
            [官方更新说明](https://github.com/lbl8603/vnt/releases)
            
           tag_name: ${{ env.tag }}
