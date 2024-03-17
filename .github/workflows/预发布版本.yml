@@ -6,7 +6,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
-  tag: 1.2.9
+  tag: 1.2.9.1
 jobs:
  build:
     strategy:
@@ -114,7 +114,7 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
-          git clone https://github.com/lbl8603/vnt -b mio /opt/vnt
+          git clone https://github.com/lbl8603/vnt /opt/vnt
           cd /opt/vnt
           #if [[ $TARGET == aarch64-unknown-linux-musl ]] || [[ $TARGET == armv7-unknown-linux-musleabi ]] || [[ $TARGET == arm-unknown-linux-musleabi ]] ; then
           #sed -i '/let path = std::env::current_exe()/d' ./vnt-cli/src/main.rs
