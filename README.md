@@ -282,3 +282,5 @@ QQ: 1034868233
 <a href="https://github.com/lbl8603/vnt/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=lbl8603/vnt" />
 </a>
+
+[![Star History Chart](https://api.star-history.com/svg?repos=lbl8603/vnt&type=Date)](https://star-history.com/#lbl8603/vnt&Date)
