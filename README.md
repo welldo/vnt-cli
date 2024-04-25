@@ -6,6 +6,9 @@
 <a href="https://github.com/lbl8603/vnt/releases/"><img src="https://img.shields.io/github/release/lbl8603/vnt">
 <a href="https://github.com/lbl8603/vnt/issues"><img src="https://img.shields.io/github/issues-raw/lbl8603/vnt">
 <a href="https://github.com/lbl8603/vnt/discussions"><img src="https://img.shields.io/github/discussions/lbl8603/vnt">
+<a href="GitHub repo size"><img src="https://img.shields.io/github/repo-size/lbl8603/vnt?color=red&style=flat-square">
+<a href="https://github.com/lbl8603/vnt/actions?query=workflow%3ABuild"><img src="https://img.shields.io/github/actions/workflow/status/lbl8603/vnt/rust.yml?branch=main" alt="Build status">
+<a href="https://hub.docker.com/r/lubeilin/vnt"><img src="https://img.shields.io/docker/pulls/lubeilin/vnt?color=%2348BB78&logo=docker&label=pulls" alt="Downloads">
 </p>
     
 A virtual network tool (VPN)
