@@ -1,5 +1,13 @@
 # Vnt
 
+<p align="center">
+<a href="https://github.com/lbl8603/vnt/releases"><img src="https://img.shields.io/github/downloads/lbl8603/vnt/total">
+<a href="https://github.com/lbl8603/vnt/graphs/contributors"><img src="https://img.shields.io/github/contributors-anon/lbl8603/vnt">
+<a href="https://github.com/lbl8603/vnt/releases/"><img src="https://img.shields.io/github/release/lbl8603/vnt">
+<a href="https://github.com/lbl8603/vnt/issues"><img src="https://img.shields.io/github/issues-raw/lbl8603/vnt">
+<a href="https://github.com/lbl8603/vnt/discussions"><img src="https://img.shields.io/github/discussions/lbl8603/vnt">
+</p>
+    
 A virtual network tool (VPN)
 
 将不同网络下的多个设备虚拟到一个局域网下
