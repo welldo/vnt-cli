@@ -6,7 +6,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
-  tag: 1.2.10.2
+  tag: 1.2.x
 jobs:
  build:
     strategy:
