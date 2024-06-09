@@ -2,12 +2,21 @@ name: 编译预发布版本vnt-cli
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: '发布prerelease的版本号'
+        required: true
+        default: '9.9.9'
+      branch:
+        description: '编译vnt-cli的lbl8603/vnt分支或版本号，默认主分支main'
+        required: true
+        default: 'main'
 
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
-  tag: 1.2.10.3
-  branch: 1.2.x
+  tag: "${{ github.event.inputs.tag }}"
+  branch: "${{ github.event.inputs.branch }}"
 jobs:
  build:
     strategy:
