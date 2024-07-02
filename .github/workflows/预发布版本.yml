@@ -11,12 +11,17 @@ on:
         description: '编译vnt-cli的lbl8603/vnt分支或版本号，默认主分支main'
         required: true
         default: 'main'
+      cmd:
+        description: '编译vnt-cli的额外模块参数默认只有openssl-vendored 需要的直接填,websocket'
+        required: false
+        default: ',websocket'
 
 env:
   CARGO_TERM_COLOR: always
   TZ: Asia/Shanghai
   tag: "${{ github.event.inputs.tag }}"
   branch: "${{ github.event.inputs.branch }}"
+  cmd: "${{ github.event.inputs.cmd }}"
 jobs:
  build:
     strategy:
@@ -131,7 +136,8 @@ jobs:
           #sed -i 's|.join("env");|let path = PathBuf::from("/tmp");|g' ./vnt-cli/src/main.rs
           #fi
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
-          cargo build --package vnt-cli --release --target $TARGET --features $FEATURES
+          cmd=$(echo $cmd | tr -d ' ')
+          cargo build --package vnt-cli --release --target $TARGET --features ${FEATURES}${cmd}
       - name: Install UPX
         uses: crazy-max/ghaction-upx@v3
         with:
@@ -156,7 +162,8 @@ jobs:
           linker = "arm-openwrt-linux-muslgnueabi-gcc"
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
           EOF
-          cargo build --package vnt-cli --release --target arm-unknown-linux-musleabi --features ring-cipher,openssl-vendored
+          cmd=$(echo $cmd | tr -d ' ')
+          cargo build --package vnt-cli --release --target arm-unknown-linux-musleabi --features ring-cipher,openssl-vendored${cmd}
           mv /opt/vnt/target/arm-unknown-linux-musleabi/release/vnt-cli /opt/upx/vnt-cli_ddwrt-arm_cortex-a9
           cd /opt/upx
           arm-openwrt-linux-muslgnueabi-strip vnt-cli_ddwrt-arm_cortex-a9
