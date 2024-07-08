@@ -138,7 +138,7 @@ jobs:
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           cmd=$(echo $cmd | tr -d ' ')
           echo "###############编译vn-link-cli#####################"
-          cargo build --package vn-link-cli --release --verbose --target $TARGET --features ${FEATURES}${cmd}
+          cargo build --package vn-link-cli --release --target $TARGET --features ${FEATURES}${cmd}
           echo "###############编译vnt-cli#####################"
           cargo build --package vnt-cli --release --target $TARGET --features ${FEATURES}${cmd}
       - name: Install UPX
@@ -169,7 +169,7 @@ jobs:
           EOF
           cmd=$(echo $cmd | tr -d ' ')
           echo "###############编译vn-link-cli#####################"
-          cargo build --package vn-link-cli --release --verbose --target arm-unknown-linux-musleabi --features ring-cipher,openssl-vendored${cmd}
+          cargo build --package vn-link-cli --release --target arm-unknown-linux-musleabi --features ring-cipher,openssl-vendored${cmd}
           echo "###############编译vnt-cli#####################"
           cargo build --package vnt-cli --release --target arm-unknown-linux-musleabi --features ring-cipher,openssl-vendored${cmd}
           mv /opt/vnt/target/arm-unknown-linux-musleabi/release/vnt-cli /opt/upx/vnt-cli_ddwrt-arm_cortex-a9
