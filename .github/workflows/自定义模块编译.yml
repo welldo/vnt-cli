@@ -141,7 +141,7 @@ jobs:
           cd /opt/vnt
           [[ -n $feature ]] && echo "当前${TARGET}架构添加的模块有 ${feature}" && FEATURES="--features ${feature}"
           echo "####################编译vn-link-cli#############################"
-          cargo build --package vn-link-cli --release --verbose --target $TARGET --no-default-features $FEATURES
+          cargo build --package vn-link-cli --release --target $TARGET --no-default-features $FEATURES
           echo "####################编译vnt-cli#############################"
           cargo build --package vnt-cli --release --target $TARGET --no-default-features $FEATURES
           mkdir -p /opt/bin
