@@ -23,7 +23,7 @@ on:
           - i686
           - x86_64
       feature:
-        description: '按需编译模块 openssl-vendored,ring-cipher,aes_cbc,aes_ecb,aes_gcm,sm4_cbc,chacha20_poly1305,server_encrypt,ip_proxy,port_mapping,log,command,file_config,lz4,zstd  按需添加想要的模块，多个模块以,分隔'
+        description: '按需编译模块 openssl-vendored,ring-cipher,aes_cbc,aes_ecb,aes_gcm,sm4_cbc,chacha20_poly1305,server_encrypt,ip_proxy,port_mapping,log,comm和,file_config,lz4,zstd,wss 按需添加想要的模块，多个模块以,分隔'
         required: false
         default: ''
       upx:
@@ -140,9 +140,13 @@ jobs:
           git clone -b ${{ env.branch }} https://github.com/lbl8603/vnt /opt/vnt
           cd /opt/vnt
           [[ -n $feature ]] && echo "当前${TARGET}架构添加的模块有 ${feature}" && FEATURES="--features ${feature}"
+          echo "####################编译vn-link-cli#############################"
+          cargo build --package vn-link-cli --release --verbose --target $TARGET --no-default-features $FEATURES
+          echo "####################编译vnt-cli#############################"
           cargo build --package vnt-cli --release --target $TARGET --no-default-features $FEATURES
           mkdir -p /opt/bin
           mv /opt/vnt/target/${TARGET}/release/vnt-cli /opt/bin/vnt-cli
+          mv /opt/vnt/target/${TARGET}/release/vn-link-cli /opt/bin/vn-link-cli
       - name: Install UPX
         uses: crazy-max/ghaction-upx@v3
         with:
@@ -153,8 +157,11 @@ jobs:
         run: |
           cd /opt/bin
           ls -alh vnt-cli
+          ls -alh vn-link-cli
           upx --lzma --best vnt-cli
+          upx --lzma --best vn-link-cli
           ls -alh vnt-cli
+          ls -alh vn-link-cli
       - name: 上传
         uses: actions/upload-artifact@v4
         if: always()
