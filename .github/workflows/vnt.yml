@@ -32,15 +32,15 @@ jobs:
         include:
           - TARGET: aarch64-unknown-linux-musl
             OS: ubuntu-latest
-            FEATURES: ring-cipher,openssl-vendored
+            FEATURES: ring-cipher,openssl-vendored,wss
             STRIP: aarch64-linux-musl-strip
           - TARGET: armv7-unknown-linux-musleabihf
             OS: ubuntu-latest
-            FEATURES: openssl-vendored
+            FEATURES: ring-cipher,openssl-vendored,wss
             STRIP: armv7l-linux-musleabihf-strip
           - TARGET: armv7-unknown-linux-musleabi
             OS: ubuntu-latest
-            FEATURES: openssl-vendored
+            FEATURES: ring-cipher,openssl-vendored,wss
             STRIP: armv7m-linux-musleabi-strip
           - TARGET: arm-unknown-linux-musleabihf
             OS: ubuntu-latest
@@ -48,15 +48,15 @@ jobs:
             STRIP: arm-linux-musleabihf-strip
           - TARGET: arm-unknown-linux-musleabi
             OS: ubuntu-latest
-            FEATURES: ring-cipher,openssl-vendored
+            FEATURES: ring-cipher,openssl-vendored,wss
             STRIP: arm-linux-musleabi-strip
           - TARGET: mipsel-unknown-linux-musl
             OS: ubuntu-latest
-            FEATURES: openssl-vendored,ring-cipher
+            FEATURES: openssl-vendored,ring-cipher,wss
             STRIP: mipsel-linux-musl-strip
           - TARGET: mips-unknown-linux-musl
             OS: ubuntu-latest
-            FEATURES: openssl-vendored
+            FEATURES: ring-cipher,openssl-vendored,wss
             STRIP: mips-linux-musl-strip
     runs-on: ${{ matrix.OS }}
     env:
@@ -155,7 +155,7 @@ jobs:
           linker = "arm-openwrt-linux-muslgnueabi-gcc"
           rustflags = ["-C", "target-feature=+crt-static","-C", "strip=symbols"]
           EOF
-          cargo build --package vnt-cli --release --target arm-unknown-linux-musleabi --features ring-cipher,openssl-vendored
+          cargo build --package vnt-cli --release --target arm-unknown-linux-musleabi --features ring-cipher,openssl-vendored,wss
           mv /opt/vnt/target/arm-unknown-linux-musleabi/release/vnt-cli /opt/upx/vnt-cli_ddwrt-arm_cortex-a9
           cd /opt/upx
           arm-openwrt-linux-muslgnueabi-strip vnt-cli_ddwrt-arm_cortex-a9
