@@ -146,7 +146,7 @@ jobs:
       - name: 打包压缩
         run: |
           mkdir -p /opt/upx
-          mv /opt/vnt/target/${TARGET}/release/vn-link-cli /opt/upx/${NAME}
+          mv /opt/vnt/target/${TARGET}/release/vnt-cli /opt/upx/${NAME}
           cd /opt/upx
           /opt/musl_gcc/${{ env.MUSL_URI }}/bin/${STRIP} ${NAME}
           upx --lzma --best ${NAME}
