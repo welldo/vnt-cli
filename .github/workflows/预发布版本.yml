@@ -8,7 +8,7 @@ on:
         required: true
         default: '9.9.9'
       branch:
-        description: '编译vnt-cli的lbl8603/vnt分支或版本号，默认主分支main'
+        description: '编译vnt-cli的vnt-dev/vnt分支或版本号，默认主分支main'
         required: true
         default: 'main'
       cmd:
@@ -126,7 +126,7 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
-          git clone -b ${{ env.branch }} https://github.com/lbl8603/vnt /opt/vnt
+          git clone -b ${{ env.branch }} https://github.com/vnt-dev/vnt /opt/vnt
           cd /opt/vnt
           #if [[ $TARGET == aarch64-unknown-linux-musl ]] || [[ $TARGET == armv7-unknown-linux-musleabi ]] || [[ $TARGET == arm-unknown-linux-musleabi ]] ; then
           #sed -i '/let path = std::env::current_exe()/d' ./vnt-cli/src/main.rs
@@ -182,7 +182,7 @@ jobs:
            -musleabi：只支持软件浮点的设备
            -musleabihf：支持硬件浮点的设备
            
-           [官方更新说明](https://github.com/lbl8603/vnt/releases)
+           [官方更新说明](https://github.com/vnt-dev/vnt/releases)
            
           tag_name: ${{ env.tag }}
           prerelease: true
