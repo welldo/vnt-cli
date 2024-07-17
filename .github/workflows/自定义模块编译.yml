@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: '编译vnt-cli的lbl8603/vnt分支或版本号，默认主分支main'
+        description: '编译vnt-cli的vnt-dev/vnt分支或版本号，默认主分支main'
         required: true
         default: 'main'
       target:
@@ -137,7 +137,7 @@ jobs:
         run: rustup target add $TARGET
       - name: 开始编译
         run: |
-          git clone -b ${{ env.branch }} https://github.com/lbl8603/vnt /opt/vnt
+          git clone -b ${{ env.branch }} https://github.com/lvnt-dev/vnt /opt/vnt
           cd /opt/vnt
           [[ -n $feature ]] && echo "当前${TARGET}架构添加的模块有 ${feature}" && FEATURES="--features ${feature}"
           cargo build --package vnt-cli --release --target $TARGET --no-default-features $FEATURES
