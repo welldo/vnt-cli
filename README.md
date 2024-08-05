@@ -21,7 +21,7 @@
 
 [![Forkers](https://bytecrank.com/nastyox/reporoster/php/forkersSVG.php?user=vnt-dev&repo=vnt)](https://github.com/vnt-dev/vnt/network/members)
 
-### `Contributions`
+### 参与贡献
 
 <a href="https://github.com/vnt-dev/vnt/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=vnt-dev/vnt" />
