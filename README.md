@@ -23,9 +23,7 @@
 
 ### `Star`
 
-感谢所有支持本项目的朋友 :heart:
-
-[![Stargazers](https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?user=vnt-dev&repo=vnt)](https://github.com/vnt-dev/vnt/stargazers)
+[![Star History Chart](https://api.star-history.com/svg?repos=vnt-dev/vnt&type=Date)](https://star-history.com/#vnt-dev/vnt&Date)
     
 A virtual network tool (VPN)
 
