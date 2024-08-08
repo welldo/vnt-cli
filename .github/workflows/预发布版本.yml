@@ -138,6 +138,7 @@ jobs:
           #echo "tag=$(grep -o 'version = "[^"]*' ./common/Cargo.toml | sed 's/version = "//')" >> $GITHUB_ENV
           #修改为中文
           sed -i 's|en.to_string|zh.to_string|g' ./common/src/cli.rs
+          sed -i 's|en-US|zh|g' ./common/src/cli.rs
           cmd=$(echo $cmd | tr -d ' ')
           cargo build --package vnt-cli --release --target $TARGET --features ${FEATURES}${cmd}
       - name: Install UPX
