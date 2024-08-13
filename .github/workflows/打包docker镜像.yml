@@ -96,19 +96,19 @@ jobs:
         run: |
           mkdir -p /opt/dk
           docker pull --platform linux/amd64 lmq8267/vnt:${{ env.tags }}
-          docker save -o /opt/dk/vnt-amd64-docker.tar lmq8267/vnt:${{ env.tags }}
+          docker save -o /opt/dk/vnt-cli-amd64-docker.tar lmq8267/vnt:${{ env.tags }}
 
           docker pull --platform linux/386 lmq8267/vnt:${{ env.tags }}
-          docker save -o /opt/dk/vnt-386-docker.tar lmq8267/vnt:${{ env.tags }}
+          docker save -o /opt/dk/vnt-cli-386-docker.tar lmq8267/vnt:${{ env.tags }}
 
           docker pull --platform linux/arm64 lmq8267/vnt:${{ env.tags }}
-          docker save -o /opt/dk/vnt-arm64-docker.tar lmq8267/vnt:${{ env.tags }}
+          docker save -o /opt/dk/vnt-cli-arm64-docker.tar lmq8267/vnt:${{ env.tags }}
 
           docker pull --platform linux/arm/v7 lmq8267/vnt:${{ env.tags }}
-          docker save -o /opt/dk/vnt-armv7-docker.tar lmq8267/vnt:${{ env.tags }}
+          docker save -o /opt/dk/vnt-cli-armv7-docker.tar lmq8267/vnt:${{ env.tags }}
 
           docker pull --platform linux/arm/v6 lmq8267/vnt:${{ env.tags }}
-          docker save -o /opt/dk/vnt-armv5-docker.tar lmq8267/vnt:${{ env.tags }}
+          docker save -o /opt/dk/vnt-cli-armv5-docker.tar lmq8267/vnt:${{ env.tags }}
           echo "build_time=$(TZ=UTC-8 date +%Y-%m-%d' '%H:%M:%S)" >> $GITHUB_ENV
       - name: 发布
         uses: softprops/action-gh-release@v2
@@ -121,7 +121,7 @@ jobs:
            
            -musleabi：只支持软件浮点的设备
            -musleabihf：支持硬件浮点的设备
-           -docker.tar  离线docker镜像包
+           -docker.tar  离线docker镜像包(通过设置环境变量APP=vn-link-cli 来启动vn-link-cli)
            
            [官方更新说明](https://github.com/vnt-dev/vnt/releases)
            
