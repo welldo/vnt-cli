@@ -96,7 +96,7 @@ jobs:
         run: |
           mkdir -p /opt/dk
           docker pull --platform linux/amd64 lmq8267/vnt:${{ env.tags }}
-          docker save -o /opt/dk/vnt-cli-amd64-docker.tar lmq8267/vnt:${{ env.tags }}
+          docker save -o /opt/dk/vnt-cli-x86_64-docker.tar lmq8267/vnt:${{ env.tags }}
 
           docker pull --platform linux/386 lmq8267/vnt:${{ env.tags }}
           docker save -o /opt/dk/vnt-cli-386-docker.tar lmq8267/vnt:${{ env.tags }}
